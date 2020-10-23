@@ -9,3 +9,4 @@ def rot(W, n, m, i, j, c, s)
 # matriz triangular superior
 
 W = np.matrix()
+b = np.matrix()
