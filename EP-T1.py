@@ -18,6 +18,18 @@ def Rotgivens(W,vecaux,n,m,i,j,c,s):
 
 #########################################################################
 
+# Função para verifiar se uma matriz é triangular superior
+def Is_tsup(W)
+    is_valid = True
+    for collum in range(0, m)
+        for line in range(collum + 1, n)
+            if W[line][collum] != 0
+                is_valid = False
+                return is_valid
+    return is_valid
+
+#########################################################################
+
 #Tamanho da matriz W
 n = 784
 m = 100000
