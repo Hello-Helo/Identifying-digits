@@ -10,6 +10,7 @@ import math
 
 # Método de rotação de Givens disponibilizado no E-Disciplinas no arquivo
 # vector_oper.py
+
 def Rotgivens(W,n,m,i,j,c,s):
   W[i,0:m] , W[j,0:m] = c * W[i,0:m] - s * W[j,0:m] , s * W[i,0:m] + c * W[j,0:m]
   return W
@@ -17,6 +18,7 @@ def Rotgivens(W,n,m,i,j,c,s):
 #########################################################################
 
 # Função para verifiar se uma matriz é triangular superior
+
 def Is_tsup(W):
     is_valid = True
     for collum in range(0, m):
@@ -28,6 +30,8 @@ def Is_tsup(W):
 
 #########################################################################
 
+# public static void main(String args[])
+
 #Tamanho da matriz W
 n = 3
 m = 3
@@ -35,10 +39,6 @@ m = 3
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
 W = np.array([[6,5,0],[5,1,4],[0,4,3]])
-vecaux = np.random.rand(m)
-
-#Fazemos uma copia para guardar a original
-A = W.copy()
 
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de
@@ -46,6 +46,7 @@ A = W.copy()
 c = 0.5
 s = math.sqrt(3.0)/2.0
 
+# Printa a matriz inicial
 print(W)
 
 # Boolean que verifica se a matriz é triangular superior
@@ -61,4 +62,5 @@ while tsup != True:
     tsup = Is_tsup(W)
     #print(tsup)
 
+# Printa a matriz triangular superior
 print(W)
