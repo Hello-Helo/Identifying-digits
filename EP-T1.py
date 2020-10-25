@@ -1,7 +1,7 @@
 # Correspondente a parimeira tarefa do EP de Computação III
 
-import NumPy as np
-import Matplotlib as mp
+import numpy as np
+import math
 
 # Resolver Wx = b usando uma transformação tal que W_{nxm} vira R, uma
 # matriz triangular superior
@@ -11,19 +11,19 @@ import Matplotlib as mp
 # Método de rotação de Givens disponibilizado no E-Disciplinas no arquivo
 # vector_oper.py
 def Rotgivens(W,vecaux,n,m,i,j,c,s):
-  vecaux[0:m] = c * W[i,0:m] - s * W[j,0:m]
-  W[j,0:m] = s * W[i,0:m] + c * W[j,0:m]
-  W[i,0:m] = vecaux[0:m]
-  return W
+    vecaux[0:m] = c * W[i,0:m] - s * W[j,0:m]
+    W[j,0:m] = s * W[i,0:m] + c * W[j,0:m]
+    W[i,0:m] = vecaux[0:m]
+    return W
 
 #########################################################################
 
 # Função para verifiar se uma matriz é triangular superior
-def Is_tsup(W)
+def Is_tsup(W):
     is_valid = True
-    for collum in range(0, m)
-        for line in range(collum + 1, n)
-            if W[line][collum] != 0
+    for collum in range(0, m):
+        for line in range(collum + 1, n):
+            if W[line][collum] != 0:
                 is_valid = False
                 return is_valid
     return is_valid
@@ -31,16 +31,34 @@ def Is_tsup(W)
 #########################################################################
 
 #Tamanho da matriz W
-n = 784
-m = 100000
+n = 3
+m = 3
 
 # Preenche com qualquer coisa
-W = np.random.rand(n, m)
+W = [[6,5,0],[5,1,4],[0,4,3]]
 vecaux = np.random.rand(m)
 
 #Fazemos uma copia para guardar a original
 A = W.copy()
 
-#Vamos aplicar Givens nessas linhas
-i = 4
-j = 8
+#Para simplificar, usamos valores da matriz de rotacao quaisquer para teste
+#  mas garantimos que matriz seja ortogonal (para os testes de performace isso nao importa)
+c = 0.5
+s = math.sqrt(3.0)/2.0
+
+print(W)
+
+# Boolean que verifica se a matriz é triangular superior
+tsup = False
+
+# Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
+# ela não é triangular superior
+while tsup != True:
+    for j in range(0, m):
+        for i in range(j + 1, n):
+            if W[i][j] != 0:
+                W = Rotgivens(W,vecaux,n,m,i,j,c,s)
+    tsup = Is_tsup(W)
+    #print(tsup)
+
+print(W)
