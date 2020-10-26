@@ -39,6 +39,7 @@ m = 3
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
 W = np.array([[6,5,0],[5,1,4],[0,4,3]])
+b = np.array([[16],[19],[11]])
 
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de
@@ -59,8 +60,11 @@ while tsup != True:
         for i in range(j + 1, n):
             if W[i][j] != 0:
                 W = Rotgivens(W,n,m,i,j,c,s)
+                if j == 0:
+                    b = Rotgivens(b,n,m,i,j,c,s)
     tsup = Is_tsup(W)
     #print(tsup)
 
 # Printa a matriz triangular superior
 print(W)
+print(b)
