@@ -49,11 +49,9 @@ s = math.sqrt(3.0)/2.0
 
 # Printa a matriz inicial
 print('A matriz W original:')
-print(W)
-print()
+print(W, end = "\n")
 print('A matriz b original:')
-print(b)
-print()
+print(b, end = "\n")
 
 
 # Boolean que verifica se a matriz é triangular superior
@@ -73,7 +71,6 @@ while tsup != True:
 
 # Printa a matriz triangular superior
 print('A matriz após a rotação:')
-print(W)
-print()
+print(W, end = "\n")
 print('O vetor b após a rotação:')
 print(b)
