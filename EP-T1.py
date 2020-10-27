@@ -48,7 +48,13 @@ c = 0.5
 s = math.sqrt(3.0)/2.0
 
 # Printa a matriz inicial
+print('A matriz W original:')
 print(W)
+print()
+print('A matriz b original:')
+print(b)
+print()
+
 
 # Boolean que verifica se a matriz é triangular superior
 tsup = False
@@ -56,15 +62,18 @@ tsup = False
 # Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
 # ela não é triangular superior
 while tsup != True:
-    for j in range(0, m):
-        for i in range(j + 1, n):
-            if W[i][j] != 0:
+    for k in range(0, m):
+        for j in range(n-1,k,-1):
+            i = j-1
+            if W[j,k] != 0:
                 W = Rotgivens(W,n,m,i,j,c,s)
-                if j == 0:
-                    b = Rotgivens(b,n,m,i,j,c,s)
+            if k == 0:
+                b = Rotgivens(b,n,m,i,j,c,s)
     tsup = Is_tsup(W)
-    #print(tsup)
 
 # Printa a matriz triangular superior
+print('A matriz após a rotação:')
 print(W)
+print()
+print('O vetor b após a rotação:')
 print(b)
