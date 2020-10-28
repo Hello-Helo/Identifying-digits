@@ -88,7 +88,7 @@ print(W, end = "\n")
 print('O vetor b após a rotação:')
 print(b)
 
-x = np.array([[0],[0],[0]])
+x = np.array([[0],[0],[0]], dtype = float)
 som = 0
 
 for k in range (Wm-1, -1, -1):
