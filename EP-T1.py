@@ -35,7 +35,7 @@ def Is_tsup(W, Wn, Wm):
 
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
-W = np.array([[6,5,0],[5,1,4],[0,4,3]])
+W = np.array([[6,5,0],[5,1,4],[0,4,1]])
 b = np.array([[16],[19],[11]])
 
 #Tamanho da matriz W
