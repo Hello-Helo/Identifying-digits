@@ -82,18 +82,18 @@ while tsup != True:
                     b = Rotgivens(b,Wn,Wm,i,j,c,s)
     tsup = Is_tsup(W, Wn, Wm)
 
-# Printa a matriz triangular superior
+
 print('A matriz após a rotação:')
 print(W, end = "\n")
 print('O vetor b após a rotação:')
-print(b)
+print(b, end = "\n")
 
+# Soluciona a equação Rx = b'e printa a matrix x resultante
 x = np.array([[0],[0],[0]], dtype = float)
 som = 0
-
 for k in range (Wm-1, -1, -1):
 	for j in range (k+1, Wm):
 		som = W[k, j]*x[j, 0]
 	x[k, 0] = (b[k, 0] - som)/W[k, k]
-
+print('A matriz após a rotação:')
 print(x)
