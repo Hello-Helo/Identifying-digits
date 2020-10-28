@@ -19,10 +19,10 @@ def Rotgivens(W,n,m,i,j,c,s):
 
 # Função para verifiar se uma matriz é triangular superior
 
-def Is_tsup(W):
+def Is_tsup(W, Wn, Wm):
     is_valid = True
-    for collum in range(0, m):
-        for line in range(collum + 1, n):
+    for collum in range(0, Wm):
+        for line in range(collum + 1, Wn):
             if W[line][collum] != 0:
                 is_valid = False
                 return is_valid
@@ -32,14 +32,19 @@ def Is_tsup(W):
 
 # public static void main(String args[])
 
-#Tamanho da matriz W
-n = 3
-m = 3
 
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
-W = np.array([[6,5,0],[5,1,4],[0,4,3]])
+W = np.array([[6,5,0],[5,1,4],[0,4,1]])
 b = np.array([[16],[19],[11]])
+
+#Tamanho da matriz W
+Wn = np.atleast_2d(W).shape[0]
+Wm = np.atleast_2d(W).shape[1]
+
+#Tamanho da matriz b
+bn = np.atleast_2d(b).shape[0]
+bm = np.atleast_2d(b).shape[1]
 
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de
@@ -53,21 +58,20 @@ print(W, end = "\n")
 print('A matriz b original:')
 print(b, end = "\n")
 
-
 # Boolean que verifica se a matriz é triangular superior
 tsup = False
 
 # Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
 # ela não é triangular superior
 while tsup != True:
-    for k in range(0, m):
-        for j in range(n-1,k,-1):
+    for k in range(0, Wm):
+        for j in range(Wn-1,k,-1):
             i = j-1
             if W[j,k] != 0:
-                W = Rotgivens(W,n,m,i,j,c,s)
-            if k == 0:
-                b = Rotgivens(b,n,m,i,j,c,s)
-    tsup = Is_tsup(W)
+                W = Rotgivens(W,Wn,Wm,i,j,c,s)
+                if k < bm:
+                    b = Rotgivens(b,Wn,Wm,i,j,c,s)
+    tsup = Is_tsup(W, Wn, Wm)
 
 # Printa a matriz triangular superior
 print('A matriz após a rotação:')
