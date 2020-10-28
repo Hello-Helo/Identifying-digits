@@ -74,3 +74,13 @@ print('A matriz após a rotação:')
 print(W, end = "\n")
 print('O vetor b após a rotação:')
 print(b)
+
+x = np.array([[0],[0],[0]])
+som = 0
+
+for k in range (m-1, 0, -1):
+	for j in range (k+1, m):
+		som = W[k, j]*x[j, 0]
+	x[k, 0] = (b[k, 0] - som)/W[k, k]
+
+print(x)
