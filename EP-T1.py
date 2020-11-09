@@ -37,8 +37,11 @@ def Is_tsup(W, Wn, Wm):
 
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
-W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
-b = np.array([[16], [19], [11]], dtype=float)
+# W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
+# b = np.array([[16], [19], [11]], dtype=float)
+W = np.array([[1, 2], [3, 4]], dtype=float)
+b = np.array([[5], [11]], dtype=float)
+
 
 # Tamanho da matriz W
 Wn = np.atleast_2d(W).shape[0]
@@ -80,8 +83,7 @@ while tsup == False:
                     s = 1 / math.sqrt(1 + t ** 2)
                     c = s * t
                 W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                if k < bm:
-                    b = Rotgivens(b, Wn, Wm, i, j, c, s)
+                b = Rotgivens(b, Wn, Wm, i, j, c, s)
     tsup = Is_tsup(W, Wn, Wm)
 
 
@@ -92,7 +94,7 @@ print(b, end="\n")
 
 
 # Soluciona a equação Rx = b'e printa a matrix x resultante
-x = np.array([[0], [0], [0]], dtype=float)
+x = np.empty((Wn, bm), dtype=float)
 som = 0
 for k in range(Wm - 1, -1, -1):
     for j in range(k + 1, Wm):
