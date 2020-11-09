@@ -35,13 +35,35 @@ def Is_tsup(W, Wn, Wm):
 
 #########################################################################
 
+
+def Constants(W, j, k):
+    if abs(W[i, k]) > abs(W[j, k]):
+        t = -W[j, k] / W[i, k]
+        c = 1 / math.sqrt(1 + t ** 2)
+        s = c * t
+    else:
+        t = -W[i, k] / W[j, k]
+        s = 1 / math.sqrt(1 + t ** 2)
+        c = s * t
+    return s, c
+
+
+#########################################################################
+
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
-# W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
-# b = np.array([[16], [19], [11]], dtype=float)
-W = np.array([[1, 2], [3, 4]], dtype=float)
-b = np.array([[5], [11]], dtype=float)
-
+# W = np.empty((64, 64), dtype=float)
+# for i in range(0, 64):
+#     for j in range(0, 64):
+#         if i == j:
+#             W[i, j] = 2
+#         elif abs(i - j) == 1:
+#             W[i, j] = 1
+#         else:
+#             W[i, j] = 0
+# b = np.ones((64, 1), dtype=float)
+W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
+b = np.array([[16], [19], [11]], dtype=float)
 
 # Tamanho da matriz W
 Wn = np.atleast_2d(W).shape[0]
@@ -58,7 +80,6 @@ c = 0.5
 s = math.sqrt(3.0) / 2.0
 t = 0
 
-# Printa a matriz inicial
 print("A matriz W original:")
 print(W, end="\n")
 print("A matriz b original:")
@@ -74,14 +95,9 @@ while tsup == False:
         for j in range(Wn - 1, k, -1):
             i = j - 1
             if W[j, k] != 0:
-                if abs(W[i, k]) > abs(W[j, k]):
-                    t = -W[j, k] / W[i, k]
-                    c = 1 / math.sqrt(1 + t ** 2)
-                    s = c * t
-                else:
-                    t = -W[i, k] / W[j, k]
-                    s = 1 / math.sqrt(1 + t ** 2)
-                    c = s * t
+                const = Constants(W, j, k)
+                s = const[0]
+                c = const[1]
                 W = Rotgivens(W, Wn, Wm, i, j, c, s)
                 b = Rotgivens(b, Wn, Wm, i, j, c, s)
     tsup = Is_tsup(W, Wn, Wm)
@@ -94,8 +110,8 @@ print(b, end="\n")
 
 
 # Soluciona a equação Rx = b'e printa a matrix x resultante
-x = np.array([[0], [0], [0]], dtype=float)
-for k in range(Wm-1, -1, -1):
+x = np.empty((Wn, bm), dtype=float)
+for k in range(Wm - 1, -1, -1):
     som = 0
     for j in range(k + 1, Wm):
         som = som + W[k, j] * x[j, 0]
