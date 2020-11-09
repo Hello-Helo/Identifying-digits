@@ -97,10 +97,8 @@ print(b, end="\n")
 x = np.array([[0], [0], [0]], dtype=float)
 for k in range(Wm-1, -1, -1):
     som = 0
-    print(k, end="\n")
     for j in range(k + 1, Wm):
         som = som + W[k, j] * x[j, 0]
-        print(som, end ="\n")
     x[k, 0] = (b[k, 0] - som) / W[k, k]
 print("A matriz após a rotação:")
 print(x)
