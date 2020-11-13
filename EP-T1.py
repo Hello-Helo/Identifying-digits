@@ -111,7 +111,7 @@ tsup = False
 
 # Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
 # ela não é triangular superior
-while tsup == False:
+while tsup is False:
     for k in range(0, Wm):
         for j in range(Wn - 1, k, -1):
             i = j - 1
