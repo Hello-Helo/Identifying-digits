@@ -60,11 +60,13 @@ def Solution(W, b):
     bm = np.atleast_2d(b).shape[1]
     # Solução
     x = np.empty((Wn, bm), dtype=float)
-    for k in range(Wm - 1, -1, -1):
-        som = 0
-        for j in range(k + 1, Wm):
-            som = som + W[k, j] * x[j, 0]
-        x[k, 0] = (b[k, 0] - som) / W[k, k]
+    for w in range(0, bm):
+        for k in range(Wm - 1, -1, -1):
+            som = 0
+            for j in range(k + 1, Wm):
+                som = som + W[k, j] * x[j, w]
+            x[k, w] = (b[k, w] - som) / W[k, k]
+    return x
 
 
 #########################################################################
