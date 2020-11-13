@@ -15,3 +15,4 @@ Am = np.atleast_2d(A).shape[1]
 Arb = 2
 
 W = np.random.randint(100, size=(An, Arb))
+H = np.empty((Arb, Am), dtype=float)
