@@ -50,6 +50,25 @@ def Constants(W, j, k):
 
 #########################################################################
 
+# Solução para a equação Wx = b
+
+
+def Solution(W, b):
+    # Tmanho das matrizes
+    Wn = np.atleast_2d(W).shape[0]
+    Wm = np.atleast_2d(W).shape[1]
+    bm = np.atleast_2d(b).shape[1]
+    # Solução
+    x = np.empty((Wn, bm), dtype=float)
+    for k in range(Wm - 1, -1, -1):
+        som = 0
+        for j in range(k + 1, Wm):
+            som = som + W[k, j] * x[j, 0]
+        x[k, 0] = (b[k, 0] - som) / W[k, k]
+
+
+#########################################################################
+
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
 # W = np.empty((64, 64), dtype=float)
@@ -110,11 +129,6 @@ print(b, end="\n")
 
 
 # Soluciona a equação Rx = b'e printa a matrix x resultante
-x = np.empty((Wn, bm), dtype=float)
-for k in range(Wm - 1, -1, -1):
-    som = 0
-    for j in range(k + 1, Wm):
-        som = som + W[k, j] * x[j, 0]
-    x[k, 0] = (b[k, 0] - som) / W[k, k]
+x = Solution(W, b)
 print("A matriz após a rotação:")
 print(x)
