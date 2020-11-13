@@ -4,7 +4,14 @@ import math
 
 import numpy as np
 
-Wn = 5
-Wm = 5
+A = [[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]]
+An = np.atleast_2d(A).shape[0]
+Am = np.atleast_2d(A).shape[1]
 
-W = np.random.randint(100, size=(Wn, Wm))
+# An = Wn
+# Am = Hm
+# Wm = An - Arbitrario
+
+Arb = 2
+
+W = np.random.randint(100, size=(An, Arb))
