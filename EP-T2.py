@@ -46,9 +46,25 @@ while E > 0.00001 and iterations < 100:
 	H = T1ep.Solution(W, A)
 	A = Aprime
 
-	#Aqui temos que transformar H em Hi,j = max(Hi,j , 0)
+	for n in range(0, Arb):
+		for m in range(0, Am):
+			H[n,m] = max(H[m,n], 0)
 
     Ht = np.transpose(H)
     At = np.transpose(A)
 
     ct = T1ep.Transformation(Ht, At)
+    Ht = ct[0]
+    At = ct[1]
+    Wt = T1ep.Solution(Ht, At)
+    W = np.transpose(Wt)
+    A = Aprime
+
+    for n in range(0, An):
+		for m in range(0, Arb):
+			W[n,m] = max(W[m,n], 0)
+
+	E = (A - W*H)**2
+	iterations += 1
+
+
