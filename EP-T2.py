@@ -1,4 +1,16 @@
-# Correspondente a segunda tarefa do EP de Computação III
+#      _   _ _
+#     | | | | |        Heloisa Lazari & Lucca Alipio
+#     | |_| | |        Ciências Moleculares - USP
+#     |  _  | |___     heloisalbento@usp.br |
+#     |_| |_|_____|
+#
+#     Segunda tarefa do EP de Computação III
+#
+#
+#
+#
+###############################################################################
+
 
 import math
 
@@ -16,3 +28,5 @@ Arb = 2
 
 W = np.random.randint(100, size=(An, Arb))
 H = np.empty((Arb, Am), dtype=float)
+
+Aprime = np.copy(A)

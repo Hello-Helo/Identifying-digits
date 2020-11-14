@@ -1,16 +1,24 @@
-# Correspondente a parimeira tarefa do EP de Computação III
-
-# Resolver Wx = b usando uma transformação tal que W_{nxm} vira R, uma
-# matriz triangular superior
+#      _   _ _
+#     | | | | |        Heloisa Lazari & Lucca Alipio
+#     | |_| | |        Ciências Moleculares - USP
+#     |  _  | |___     heloisalbento@usp.br |
+#     |_| |_|_____|
+#
+#     Primeira tarefa do EP de Computação III
+#
+#     Resolver Wx = b usando uma transformação tal que W_{nxm} vira R,
+#     uma matriz triangular superior
+#
+###############################################################################
 
 import math
 
 import numpy as np
 
-#########################################################################
+###############################################################################
 
-# Método de rotação de Givens disponibilizado no E-Disciplinas no arquivo
-# vector_oper.py
+#     Método de rotação de Givens disponibilizado no E-Disciplinas no arquivo
+#     vector_oper.py
 
 
 def Rotgivens(W, n, m, i, j, c, s):
@@ -18,7 +26,7 @@ def Rotgivens(W, n, m, i, j, c, s):
     return W
 
 
-#########################################################################
+###############################################################################
 
 # Função para verifiar se uma matriz é triangular superior
 
@@ -33,7 +41,7 @@ def Is_tsup(W, Wn, Wm):
     return is_valid
 
 
-#########################################################################
+###############################################################################
 
 
 def Constants(W, j, k):
@@ -48,7 +56,7 @@ def Constants(W, j, k):
     return s, c
 
 
-#########################################################################
+###############################################################################
 
 # Solução para a equação Wx = b
 
@@ -69,7 +77,7 @@ def Solution(W, b):
     return x
 
 
-#########################################################################
+###############################################################################
 
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
