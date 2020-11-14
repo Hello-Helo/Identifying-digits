@@ -44,7 +44,7 @@ def Is_tsup(W, Wn, Wm):
 ###############################################################################
 
 
-def Constants(W, j, k):
+def Constants(W, j,i, k):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
         c = 1 / math.sqrt(1 + t ** 2)
@@ -79,6 +79,46 @@ def Solution(W, b):
 
 ###############################################################################
 
+###############################################################################
+
+def transformation(W, b):
+	# Tamanho da matriz W
+    Wn = np.atleast_2d(W).shape[0]
+    Wm = np.atleast_2d(W).shape[1]
+
+# Tamanho da matriz b
+    bn = np.atleast_2d(b).shape[0]
+    bm = np.atleast_2d(b).shape[1]
+
+# Para simplificar, usamos valores da matriz de rotacao quaisquer para
+# teste mas garantimos que matriz seja ortogonal (para os testes de
+# performace isso nao importa)
+    c = 0.5
+    s = math.sqrt(3.0) / 2.0
+    t = 0
+
+# Boolean que verifica se a matriz é triangular superior
+    tsup = False
+
+# Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
+# ela não é triangular superior
+    while tsup == False:
+        for k in range(0, Wm):
+            for j in range(Wn - 1, k, -1):
+                i = j - 1
+                if W[j, k] != 0:
+                    const = Constants(W, j, i, k)
+                    s = const[0]
+                    c = const[1]
+                    W = Rotgivens(W, Wn, Wm, i, j, c, s)
+                    b = Rotgivens(b, Wn, Wm, i, j, c, s)
+        tsup = Is_tsup(W, Wn, Wm)
+    return W, b
+
+
+
+###############################################################################
+
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
 # W = np.empty((64, 64), dtype=float)
@@ -94,49 +134,9 @@ def Solution(W, b):
 W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
 b = np.array([[16], [19], [11]], dtype=float)
 
-# Tamanho da matriz W
-Wn = np.atleast_2d(W).shape[0]
-Wm = np.atleast_2d(W).shape[1]
-
-# Tamanho da matriz b
-bn = np.atleast_2d(b).shape[0]
-bm = np.atleast_2d(b).shape[1]
-
-# Para simplificar, usamos valores da matriz de rotacao quaisquer para
-# teste mas garantimos que matriz seja ortogonal (para os testes de
-# performace isso nao importa)
-c = 0.5
-s = math.sqrt(3.0) / 2.0
-t = 0
-
-print("A matriz W original:")
-print(W, end="\n")
-print("A matriz b original:")
-print(b, end="\n")
-
-# Boolean que verifica se a matriz é triangular superior
-tsup = False
-
-# Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
-# ela não é triangular superior
-while tsup is False:
-    for k in range(0, Wm):
-        for j in range(Wn - 1, k, -1):
-            i = j - 1
-            if W[j, k] != 0:
-                const = Constants(W, j, k)
-                s = const[0]
-                c = const[1]
-                W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                b = Rotgivens(b, Wn, Wm, i, j, c, s)
-    tsup = Is_tsup(W, Wn, Wm)
-
-
-print("A matriz após a rotação:")
-print(W, end="\n")
-print("O vetor b após a rotação:")
-print(b, end="\n")
-
+c = trasformation(W,b)
+W = c[0]
+b = c[1]
 
 # Soluciona a equação Rx = b'e printa a matrix x resultante
 x = Solution(W, b)
