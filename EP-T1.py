@@ -1,7 +1,7 @@
 #      _   _ _
 #     | | | | |        Heloisa Lazari & Lucca Alipio
 #     | |_| | |        Ciências Moleculares - USP
-#     |  _  | |___     heloisalbento@usp.br |
+#     |  _  | |___     heloisalbento@usp.br | luccapagnan@usp.br
 #     |_| |_|_____|
 #
 #     Primeira tarefa do EP de Computação III
