@@ -44,7 +44,7 @@ def Is_tsup(W, Wn, Wm):
 ###############################################################################
 
 
-def Constants(W, j, k):
+def Constants(W, j, k, i):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
         c = 1 / math.sqrt(1 + t ** 2)
@@ -79,6 +79,30 @@ def Solution(W, b):
 
 ###############################################################################
 
+
+def Transformation(W, b):
+    tsup = False
+    Wn = np.atleast_2d(W).shape[0]
+    Wm = np.atleast_2d(W).shape[1]
+    for k in range(0, Wm):
+        for j in range(Wn - 1, k, -1):
+            i = j - 1
+            if W[j, k] != 0:
+                const = Constants(W, j, k, i)
+                s = const[0]
+                c = const[1]
+                W = Rotgivens(W, Wn, Wm, i, j, c, s)
+                b = Rotgivens(b, Wn, Wm, i, j, c, s)
+    tsup = Is_tsup(W, Wn, Wm)
+    if tsup is False:
+        mat = Transformation(W, b)
+        W = mat[0]
+        b = mat[1]
+    return W, b
+
+
+###############################################################################
+
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
 # W = np.empty((64, 64), dtype=float)
@@ -94,43 +118,18 @@ def Solution(W, b):
 W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
 b = np.array([[16], [19], [11]], dtype=float)
 
-# Tamanho da matriz W
-Wn = np.atleast_2d(W).shape[0]
-Wm = np.atleast_2d(W).shape[1]
-
-# Tamanho da matriz b
-bn = np.atleast_2d(b).shape[0]
-bm = np.atleast_2d(b).shape[1]
-
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de
 # performace isso nao importa)
-c = 0.5
-s = math.sqrt(3.0) / 2.0
-t = 0
 
 print("A matriz W original:")
 print(W, end="\n")
 print("A matriz b original:")
 print(b, end="\n")
 
-# Boolean que verifica se a matriz é triangular superior
-tsup = False
-
-# Loop que aplica RotGivens para todo elemento inferior a diagonal enquanto
-# ela não é triangular superior
-while tsup is False:
-    for k in range(0, Wm):
-        for j in range(Wn - 1, k, -1):
-            i = j - 1
-            if W[j, k] != 0:
-                const = Constants(W, j, k)
-                s = const[0]
-                c = const[1]
-                W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                b = Rotgivens(b, Wn, Wm, i, j, c, s)
-    tsup = Is_tsup(W, Wn, Wm)
-
+transf = Transformation(W, b)
+W = transf[0]
+b = transf[1]
 
 print("A matriz após a rotação:")
 print(W, end="\n")
