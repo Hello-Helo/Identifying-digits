@@ -16,6 +16,52 @@ import math
 
 import numpy as np
 
+###############################################################################
+
+
+def Normalize(W):
+    Wn = np.atleast_2d(W).shape[0]
+    Wm = np.atleast_2d(W).shape[1]
+    for j in range(0, Wn):
+        s = math.sqrt((np.sum(W[0:Wn, j]**2))
+        for n in range(0, An):
+            W[n, m] = W[n, m] / Sj
+        W[0: Wn, j] = W[0: Wn, j]/s
+    return W
+
+###############################################################################
+
+
+def Solution(W, b):
+    # Tmanho das matrizes
+    Wm = np.atleast_2d(W).shape[1]
+    bm = np.atleast_2d(b).shape[1]
+    # Solução
+    x = np.empty((Wm, bm), dtype=float)
+    for w in range(0, bm):
+        for k in range(Wm - 1, -1, -1):
+            som = 0
+            for j in range(k + 1, Wm):
+                som = som + W[k, j] * x[j, w]
+            x[k, w] = (b[k, w] - som) / W[k, k]
+    return x
+
+
+###############################################################################
+
+
+def Make_positive(W):
+    Wn = np.atleast_2d(W).shape[0]
+    Wm = np.atleast_2d(b).shape[1]
+        for i in range(0, Wn):
+            for j in range(0, Wm):
+                W[i, j] = max(0, W[1, j])
+    return W
+
+
+###############################################################################
+
+
 A = [[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]]
 An = np.atleast_2d(A).shape[0]
 Am = np.atleast_2d(A).shape[1]
@@ -34,37 +80,30 @@ Aprime = np.copy(A)
 E = 10
 iterations = 0
 
-while E > 0.00001 and iterations < 100:
-	for m in range(0, Arb):
-		Sj = math.sqrt((np.sum(W[0:An, m]**2))
-		for n in range(0, An):
-			W[n, m] = W[n, m] / Sj
+while E > 0.000001 and iterations < 100:
+    W = Normalize(W)
 
-	c = T1ep.Transformation(W, A)
-	W = c[0]
-	A = c[1]
-	H = T1ep.Solution(W, A)
-	A = Aprime
+    Transf = EP-T1.Transformation(W, A)
+    W = Transf[0]
+    A = Transf[1]
+    H = Solution(W, A)
 
-	for n in range(0, Arb):
-		for m in range(0, Am):
-			H[n,m] = max(H[m,n], 0)
-
-    Ht = np.transpose(H)
-    At = np.transpose(A)
-
-    ct = T1ep.Transformation(Ht, At)
-    Ht = ct[0]
-    At = ct[1]
-    Wt = T1ep.Solution(Ht, At)
-    W = np.transpose(Wt)
     A = Aprime
 
-    for n in range(0, An):
-		for m in range(0, Arb):
-			W[n,m] = max(W[m,n], 0)
+    H = Make_positive(H)
 
-	E = (A - W*H)**2
-	iterations += 1
+    At = np.transpose(A)
+    Ht = np.transpose(H)
 
+    Transf = EP-T1.Transformation(Ht, At)
+    Ht = Transf[0]
+    At = Transf[1]
+    Wt = Solution(Ht, At)
 
+    A = Aprime
+
+    W = np.transpose(Wt)
+    W = Make_positive(W)
+
+    E = (A - W*H)**2
+    iterations += 1
