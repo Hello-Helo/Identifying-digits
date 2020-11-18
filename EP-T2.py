@@ -170,7 +170,7 @@ while E > 0.000001 and iterations < 100:
     A = Transf[1]
     H = Solution(W, A)
 
-    A = Aprime
+    A = np.copy(Aprime)
 
     H = Make_positive(H)
 
@@ -182,7 +182,7 @@ while E > 0.000001 and iterations < 100:
     At = Transf[1]
     Wt = Solution(Ht, At)
 
-    A = Aprime
+    A = np.copy(Aprime)
 
     W = np.transpose(Wt)
     W = Make_positive(W)
