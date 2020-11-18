@@ -81,10 +81,11 @@ def Transformation(W, b):
 
 def Solution(W, b):
     # Tmanho das matrizes
+    Wn = np.atleast_2d(W).shape[0]
     Wm = np.atleast_2d(W).shape[1]
     bm = np.atleast_2d(b).shape[1]
     # Solução
-    x = np.empty((Wm, bm), dtype=float)
+    x = np.empty((Wn, bm), dtype=float)
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
             som = 0
@@ -92,7 +93,6 @@ def Solution(W, b):
                 som = som + W[k, j] * x[j, w]
             x[k, w] = (b[k, w] - som) / W[k, k]
     return x
-
 
 ###############################################################################
 
