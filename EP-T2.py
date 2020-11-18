@@ -94,6 +94,7 @@ def Solution(W, b):
             x[k, w] = (b[k, w] - som) / W[k, k]
     return x
 
+
 ###############################################################################
 
 
@@ -116,20 +117,21 @@ def Make_positive(W):
     Wm = np.atleast_2d(W).shape[1]
     for i in range(0, Wn):
         for j in range(0, Wm):
-            W[i, j] = max(0, W[1, j])
+            W[i, j] = max(0, W[i, j])
     return W
 
 
 ###############################################################################
 
+
 def Erro(A, W, H):
-	erro = 0
-	WH = np.dot(W,H)
+    erro = 0
+    WH = np.dot(W, H)
     An = np.atleast_2d(A).shape[0]
     Am = np.atleast_2d(A).shape[1]
     for i in range(0, An):
-    	for j in range(0, Am):
-    		erro = erro + (A[i, j] - WH[i, j])**2
+        for j in range(0, Am):
+            erro = erro + (A[i, j] - WH[i, j]) ** 2
     return erro
 
 
@@ -160,6 +162,7 @@ E = 10
 iterations = 0
 
 while E > 0.000001 and iterations < 100:
+    print("Iteration: ", iterations)
     W = Normalize(W)
 
     Transf = Transformation(W, A)
@@ -186,3 +189,6 @@ while E > 0.000001 and iterations < 100:
 
     E = Erro(A, W, H)
     iterations += 1
+    print("Error: ", E)
+
+print("Done!")
