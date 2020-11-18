@@ -130,7 +130,7 @@ def Erro(A, W, H):
     for i in range(0, An):
     	for j in range(0, Am):
     		erro = erro + (A[i, j] - WH[i, j])**2
-    		return erro
+    return erro
 
 
 ###############################################################################
