@@ -63,11 +63,10 @@ def Constants(W, j, k, i):
 
 def Solution(W, b):
     # Tmanho das matrizes
-    Wn = np.atleast_2d(W).shape[0]
     Wm = np.atleast_2d(W).shape[1]
     bm = np.atleast_2d(b).shape[1]
     # Solução
-    x = np.empty((Wn, bm), dtype=float)
+    x = np.empty((Wm, bm), dtype=float)
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
             som = 0
@@ -115,8 +114,8 @@ def Transformation(W, b):
 #         else:
 #             W[i, j] = 0
 # b = np.ones((64, 1), dtype=float)
-W = np.array([[6, 5, 0], [5, 1, 4], [0, 4, 1]], dtype=float)
-b = np.array([[16], [19], [11]], dtype=float)
+W = np.array([[3 / 5, 0], [0, 1], [4 / 5, 0]], dtype=float)
+b = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]], dtype=float)
 
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de
@@ -139,5 +138,5 @@ print(b, end="\n")
 
 # Soluciona a equação Rx = b'e printa a matrix x resultante
 x = Solution(W, b)
-print("A matriz após a rotação:")
+print("A matriz x:")
 print(x)
