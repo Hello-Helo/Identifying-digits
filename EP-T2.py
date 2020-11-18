@@ -122,6 +122,19 @@ def Make_positive(W):
 
 ###############################################################################
 
+def Erro(A, W, H):
+	erro = 0
+	WH = np.dot(W,H)
+    An = np.atleast_2d(A).shape[0]
+    Am = np.atleast_2d(A).shape[1]
+    for i in range(0, An):
+    	for j in range(0, Am):
+    		erro = erro + (A[i, j] - WH[i, j])**2
+    		return erro
+
+
+###############################################################################
+
 
 A = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]])
 An = np.atleast_2d(A).shape[0]
