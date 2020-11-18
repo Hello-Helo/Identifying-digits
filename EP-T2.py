@@ -184,5 +184,5 @@ while E > 0.000001 and iterations < 100:
     W = np.transpose(Wt)
     W = Make_positive(W)
 
-    E = (A - W * H) ** 2
+    E = Erro(A, W, H)
     iterations += 1
