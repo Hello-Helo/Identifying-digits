@@ -1,3 +1,4 @@
+
 #      _   _ _
 #     | | | | |        Heloisa Lazari & Lucca Alipio
 #     | |_| | |        Ciências Moleculares - USP
@@ -81,11 +82,10 @@ def Transformation(W, b):
 
 def Solution(W, b):
     # Tmanho das matrizes
-    Wn = np.atleast_2d(W).shape[0]
     Wm = np.atleast_2d(W).shape[1]
     bm = np.atleast_2d(b).shape[1]
     # Solução
-    x = np.empty((Wn, bm), dtype=float)
+    x = np.empty((Wm, bm), dtype=float)
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
             som = 0
@@ -126,14 +126,13 @@ def Make_positive(W):
 
 def Erro(A, W, H):
     erro = 0
-    WH = np.dot(W, H)
+    WH = np.matmul(W, H)
     An = np.atleast_2d(A).shape[0]
     Am = np.atleast_2d(A).shape[1]
     for i in range(0, An):
         for j in range(0, Am):
             erro = erro + (A[i, j] - WH[i, j]) ** 2
     return erro
-
 
 ###############################################################################
 
@@ -153,42 +152,60 @@ H = np.empty((Arb, Am), dtype=float)
 
 print("A matriz A original:")
 print(A, end="\n")
-print("A matriz W original:")
-print(W, end="\n")
 
 Aprime = np.copy(A)
 
 E = 10
 iterations = 0
 
-while E > 0.000001 and iterations < 100:
-    print("Iteration: ", iterations)
+while E > 0.000001 and iterations < 5:
+    print("ITERATIONS", end ="\n\n")
+    print(W)
     W = Normalize(W)
 
     Transf = Transformation(W, A)
     W = Transf[0]
     A = Transf[1]
+    print("A matriz W:")
+    print(W, end="\n")
+    print("A matriz A:")
+    print(A, end="\n")
     H = Solution(W, A)
-
+    
     A = np.copy(Aprime)
 
-    H = Make_positive(H)
+    print("A matriz A:")
+    print(A, end="\n")
 
+    print("A matriz H:")
+    print(H, end="\n")
+
+    H = Make_positive(H)
+    print("A matriz H:")
+    print(H, end="\n")
     At = np.transpose(A)
     Ht = np.transpose(H)
 
     Transf = Transformation(Ht, At)
     Ht = Transf[0]
     At = Transf[1]
+    print("A matriz Ht:")
+    print(Ht, end="\n")
+    print("A matriz At:")
+    print(A, end="\n")
     Wt = Solution(Ht, At)
 
     A = np.copy(Aprime)
 
     W = np.transpose(Wt)
     W = Make_positive(W)
+    print("A matriz W:")
+    print(W, end="\n")
 
+    print("A matriz WH:")
+    print(np.matmul(W,H), end="\n")
+    print("A matriz A:")
+    print(A, end="\n")
     E = Erro(A, W, H)
+    print(E)
     iterations += 1
-    print("Error: ", E)
-
-print("Done!")
