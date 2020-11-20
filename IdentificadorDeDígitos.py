@@ -130,7 +130,6 @@ def Train(A, p):
     iterations = 0
 
     while Edif > 0.000001 and iterations < 100:
-        print("ITERATION", iterations)
         W = Normalize(W)
 
         Transf = Transformation(W, A)
@@ -156,8 +155,8 @@ def Train(A, p):
         Eprev = E
         E = Erro(A, W, H)
         Edif = abs(E - Eprev)
-        print("ERROR = ", E, end="\n\n")
         iterations += 1
+
     return W
 
 
@@ -177,3 +176,17 @@ A8 = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
 A9 = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
 
 p = 10
+
+W0 = Train(A0, p)
+W1 = Train(A1, p)
+W2 = Train(A2, p)
+W3 = Train(A3, p)
+W4 = Train(A4, p)
+W5 = Train(A5, p)
+W6 = Train(A6, p)
+W7 = Train(A7, p)
+W8 = Train(A8, p)
+W9 = Train(A9, p)
+
+n_test = 10000
+Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
