@@ -24,7 +24,9 @@ def Train():
 
 ###############################################################################
 
-W0 = np.loadtxt("train_dig0.txt")
+ndig = 50
+
+W0 = np.loadtxt("train_dig0.txt", usecols=range(0, ndig))
 W1 = np.loadtxt("train_dig1.txt")
 W2 = np.loadtxt("train_dig2.txt")
 W3 = np.loadtxt("train_dig3.txt")
