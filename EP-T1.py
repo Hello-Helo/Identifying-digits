@@ -92,11 +92,11 @@ def Transformation(W, b):
                 c = const[1]
                 W = Rotgivens(W, Wn, Wm, i, j, c, s)
                 b = Rotgivens(b, Wn, Wm, i, j, c, s)
-    tsup = Is_tsup(W, Wn, Wm)
-    if tsup is False:
-        mat = Transformation(W, b)
-        W = mat[0]
-        b = mat[1]
+    # tsup = Is_tsup(W, Wn, Wm)
+    # if tsup is False:
+    #     mat = Transformation(W, b)
+    #     W = mat[0]
+    #     b = mat[1]
     return W, b
 
 
@@ -114,8 +114,8 @@ def Transformation(W, b):
 #         else:
 #             W[i, j] = 0
 # b = np.ones((64, 1), dtype=float)
-W = np.array([[3 / 5, 0], [0, 1], [4 / 5, 0]], dtype=float)
-b = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]], dtype=float)
+W = np.array([[1, 2], [2, 1], [1, 2]], dtype=float)
+b = np.array([[5, 4, 5], [4, 5, 4], [5, 4, 5]], dtype=float)
 
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de

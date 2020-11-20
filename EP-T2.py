@@ -1,4 +1,3 @@
-
 #      _   _ _
 #     | | | | |        Heloisa Lazari & Lucca Alipio
 #     | |_| | |        Ciências Moleculares - USP
@@ -28,19 +27,6 @@ def Rotgivens(W, n, m, i, j, c, s):
 ###############################################################################
 
 
-def Is_tsup(W, Wn, Wm):
-    is_valid = True
-    for collum in range(0, Wm):
-        for line in range(collum + 1, Wn):
-            if W[line][collum] != 0:
-                is_valid = False
-                return is_valid
-    return is_valid
-
-
-###############################################################################
-
-
 def Constants(W, j, k, i):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
@@ -57,7 +43,6 @@ def Constants(W, j, k, i):
 
 
 def Transformation(W, b):
-    tsup = False
     Wn = np.atleast_2d(W).shape[0]
     Wm = np.atleast_2d(W).shape[1]
     for k in range(0, Wm):
@@ -69,11 +54,6 @@ def Transformation(W, b):
                 c = const[1]
                 W = Rotgivens(W, Wn, Wm, i, j, c, s)
                 b = Rotgivens(b, Wn, Wm, i, j, c, s)
-    tsup = Is_tsup(W, Wn, Wm)
-    if tsup is False:
-        mat = Transformation(W, b)
-        W = mat[0]
-        b = mat[1]
     return W, b
 
 
@@ -134,6 +114,7 @@ def Erro(A, W, H):
             erro = erro + (A[i, j] - WH[i, j]) ** 2
     return erro
 
+
 ###############################################################################
 
 
@@ -151,61 +132,64 @@ W = np.random.random(size=(An, Arb))
 H = np.empty((Arb, Am), dtype=float)
 
 print("A matriz A original:")
-print(A, end="\n")
+print(A, end="\n\n")
 
 Aprime = np.copy(A)
 
 E = 10
+Edif = 10
 iterations = 0
 
-while E > 0.000001 and iterations < 5:
-    print("ITERATIONS", end ="\n\n")
-    print(W)
+while Edif > 0.000001 and iterations < 100:
+    print("ITERATION", iterations)
+    # print(W)
     W = Normalize(W)
 
     Transf = Transformation(W, A)
     W = Transf[0]
     A = Transf[1]
-    print("A matriz W:")
-    print(W, end="\n")
-    print("A matriz A:")
-    print(A, end="\n")
+    # print("A matriz W:")
+    # print(W, end="\n")
+    # print("A matriz A:")
+    # print(A, end="\n")
     H = Solution(W, A)
-    
+
     A = np.copy(Aprime)
 
-    print("A matriz A:")
-    print(A, end="\n")
+    # print("A matriz A:")
+    # print(A, end="\n")
 
-    print("A matriz H:")
-    print(H, end="\n")
+    # print("A matriz H:")
+    # print(H, end="\n")
 
     H = Make_positive(H)
-    print("A matriz H:")
-    print(H, end="\n")
+    # print("A matriz H:")
+    # print(H, end="\n")
     At = np.transpose(A)
     Ht = np.transpose(H)
 
     Transf = Transformation(Ht, At)
     Ht = Transf[0]
     At = Transf[1]
-    print("A matriz Ht:")
-    print(Ht, end="\n")
-    print("A matriz At:")
-    print(A, end="\n")
+    # print("A matriz Ht:")
+    # print(Ht, end="\n")
+    # print("A matriz At:")
+    # print(A, end="\n")
     Wt = Solution(Ht, At)
 
     A = np.copy(Aprime)
 
     W = np.transpose(Wt)
     W = Make_positive(W)
-    print("A matriz W:")
-    print(W, end="\n")
+    # print("A matriz W:")
+    # print(W, end="\n")
 
-    print("A matriz WH:")
-    print(np.matmul(W,H), end="\n")
-    print("A matriz A:")
-    print(A, end="\n")
+    # print("A matriz WH:")
+    # print(np.matmul(W, H), end="\n")
+    # print("A matriz A:")
+    # print(A, end="\n")
+    Eprev = E
     E = Erro(A, W, H)
-    print(E)
+    Edif = abs(E - Eprev)
+    print("ERROR = ", E, end="\n\n")
     iterations += 1
