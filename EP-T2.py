@@ -13,8 +13,11 @@
 
 
 import math
+import sys
 
 import numpy as np
+
+np.set_printoptions(threshold=sys.maxsize)
 
 ###############################################################################
 
@@ -83,6 +86,7 @@ def Normalize(W):
     Wm = np.atleast_2d(W).shape[1]
     for j in range(0, Wm):
         s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
+        # print(s)
         # for i in range(0, An):
         #     W[i, j] = W[i, j] / s
         W[0:Wn, j] = W[0:Wn, j] / s
@@ -118,6 +122,17 @@ def Erro(A, W, H):
 ###############################################################################
 
 
+def Image_processing(W, m):
+    for j in range(0, m):
+        W[0:784, j] = W[0:784, j] / 255
+    return W
+
+
+###############################################################################
+
+
+# A = np.loadtxt("train_dig0.txt", usecols=range(0, 5))
+# A = Image_processing(A, 5)
 A = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]])
 An = np.atleast_2d(A).shape[0]
 Am = np.atleast_2d(A).shape[1]
@@ -131,8 +146,8 @@ Arb = 2
 W = np.random.random(size=(An, Arb))
 H = np.empty((Arb, Am), dtype=float)
 
-print("A matriz A original:")
-print(A, end="\n\n")
+# print("A matriz A original:")
+# print(A, end="\n\n")
 
 Aprime = np.copy(A)
 
@@ -141,8 +156,8 @@ Edif = 10
 iterations = 0
 
 while Edif > 0.000001 and iterations < 100:
-    print("ITERATION", iterations)
-    # print(W)
+    # print("ITERATION", iterations)
+    print(W)
     W = Normalize(W)
 
     Transf = Transformation(W, A)
@@ -165,8 +180,8 @@ while Edif > 0.000001 and iterations < 100:
     H = Make_positive(H)
     # print("A matriz H:")
     # print(H, end="\n")
-    At = np.transpose(A)
-    Ht = np.transpose(H)
+    At = np.transpose(A).copy()
+    Ht = np.transpose(H).copy()
 
     Transf = Transformation(Ht, At)
     Ht = Transf[0]
@@ -179,7 +194,9 @@ while Edif > 0.000001 and iterations < 100:
 
     A = np.copy(Aprime)
 
-    W = np.transpose(Wt)
+    W = np.transpose(Wt).copy()
+    # print("A matriz W:")
+    # print(W, end="\n")
     W = Make_positive(W)
     # print("A matriz W:")
     # print(W, end="\n")
@@ -191,5 +208,7 @@ while Edif > 0.000001 and iterations < 100:
     Eprev = E
     E = Erro(A, W, H)
     Edif = abs(E - Eprev)
-    print("ERROR = ", E, end="\n\n")
+    # print("ERROR = ", E, end="\n\n")
     iterations += 1
+
+print("Done!")

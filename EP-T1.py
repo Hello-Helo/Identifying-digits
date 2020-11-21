@@ -80,7 +80,7 @@ def Solution(W, b):
 
 
 def Transformation(W, b):
-    tsup = False
+    # tsup = False
     Wn = np.atleast_2d(W).shape[0]
     Wm = np.atleast_2d(W).shape[1]
     for k in range(0, Wm):

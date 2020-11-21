@@ -83,8 +83,6 @@ def Normalize(W):
     Wm = np.atleast_2d(W).shape[1]
     for j in range(0, Wm):
         s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
-        # for i in range(0, An):
-        #     W[i, j] = W[i, j] / s
         W[0:Wn, j] = W[0:Wn, j] / s
     return W
 
@@ -118,6 +116,15 @@ def Erro(A, W, H):
 ###############################################################################
 
 
+def Image_processing(W, m):
+    for j in range(0, m):
+        W[0:784, j] = W[0:784, j] / 255
+    return W
+
+
+###############################################################################
+
+
 def Train(A, p):
     An = np.atleast_2d(A).shape[0]
     Am = np.atleast_2d(A).shape[1]
@@ -141,8 +148,8 @@ def Train(A, p):
         A = np.copy(Aprime)
 
         H = Make_positive(H)
-        At = np.transpose(A)
-        Ht = np.transpose(H)
+        At = np.transpose(A).copy()
+        Ht = np.transpose(H).copy()
 
         Transf = Transformation(Ht, At)
         Ht = Transf[0]
@@ -151,7 +158,7 @@ def Train(A, p):
 
         A = np.copy(Aprime)
 
-        W = np.transpose(Wt)
+        W = np.transpose(Wt).copy()
         W = Make_positive(W)
         Eprev = E
         E = Erro(A, W, H)
@@ -183,8 +190,12 @@ def Norma(W, j):
 
 ###############################################################################
 
+print("Starting the Identifying DigitNATOR 2000!!!!", end="\n\n")
+print("Reading the training files...")
 start_time = time.time()
 ndig = 100
+
+real = np.loadtxt("test_index.txt")
 
 T0 = np.loadtxt("train_dig0.txt", usecols=range(0, ndig))
 T1 = np.loadtxt("train_dig1.txt", usecols=range(0, ndig))
@@ -197,9 +208,22 @@ T7 = np.loadtxt("train_dig7.txt", usecols=range(0, ndig))
 T8 = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
 T9 = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
 
-t1 = time.time() - start_time
-print("Reading training files - Done in ", t1)
+T0 = Image_processing(T0, ndig)
+T1 = Image_processing(T1, ndig)
+T2 = Image_processing(T2, ndig)
+T3 = Image_processing(T3, ndig)
+T4 = Image_processing(T4, ndig)
+T5 = Image_processing(T5, ndig)
+T6 = Image_processing(T6, ndig)
+T7 = Image_processing(T7, ndig)
+T8 = Image_processing(T8, ndig)
+T9 = Image_processing(T9, ndig)
 
+t1 = time.time() - start_time
+print("Done in", t1, "seconds")
+print("Total time is", t1, "seconds", end="\n\n")
+
+print("Training my Oompa-Loompas...")
 
 p = 10
 
@@ -215,7 +239,11 @@ W8 = Train(T8, p)
 W9 = Train(T9, p)
 
 t2 = time.time() - start_time
-print("Training the AI - Done in ", t2)
+t12 = t2 - t1
+print("Done in", t12, "seconds")
+print("Total time is", t2, "seconds", end="\n\n")
+
+print("Analazing your bad handwriting...")
 
 n_test = 10000
 Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
@@ -244,7 +272,11 @@ H8 = Solution(WW8, A8)
 H9 = Solution(WW9, A9)
 
 t3 = time.time() - start_time
-print("Solving the equations - Done in ", t3)
+t23 = t3 - t2
+print("Done in", t23, "seconds")
+print("Total time is", t3, "seconds", end="\n\n")
+
+print("Comparing your scribble with our data bank...")
 
 D0 = Difference(Atest, W0, H0)
 D1 = Difference(Atest, W1, H1)
@@ -258,10 +290,16 @@ D8 = Difference(Atest, W8, H8)
 D9 = Difference(Atest, W9, H9)
 
 t4 = time.time() - start_time
-print("Analizing the similarities - Done in ", t4)
+t34 = t4 - t3
+print("Done in", t34, "seconds")
+print("Total time is", t4, "seconds", end="\n\n")
+
+print("Identifying everything...")
 
 results = np.empty((n_test))
 error = np.empty((n_test))
+
+success = np.zeros((10))
 
 for j in range(0, n_test):
     Norms = np.empty((10))
@@ -277,5 +315,19 @@ for j in range(0, n_test):
     Norms[9] = Norma(D9, j)
 
     index = np.argmin(Norms)
-    results[j] = index
-    error[j] = Norms[index]
+    # results[j] = index
+    # error[j] = Norms[index]
+
+    if index == real[j]:
+        success[index] += 1
+
+t5 = time.time() - start_time
+t45 = t5 - t4
+print("Done in", t45, "seconds")
+print("Total time is", t4, "seconds", end="\n\n")
+
+print("Our results!")
+Sum = np.sum(success)
+Percent = (Sum / n_test) * 100
+print("We got", Sum, "correct!")
+print("This is", Percent, "%")
