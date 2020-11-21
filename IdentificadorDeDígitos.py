@@ -12,6 +12,7 @@
 ###############################################################################
 
 import math
+import time
 
 import numpy as np
 
@@ -162,31 +163,119 @@ def Train(A, p):
 
 ###############################################################################
 
-ndig = 50
 
-A0 = np.loadtxt("train_dig0.txt", usecols=range(0, ndig))
-A1 = np.loadtxt("train_dig1.txt", usecols=range(0, ndig))
-A2 = np.loadtxt("train_dig2.txt", usecols=range(0, ndig))
-A3 = np.loadtxt("train_dig3.txt", usecols=range(0, ndig))
-A4 = np.loadtxt("train_dig4.txt", usecols=range(0, ndig))
-A5 = np.loadtxt("train_dig5.txt", usecols=range(0, ndig))
-A6 = np.loadtxt("train_dig6.txt", usecols=range(0, ndig))
-A7 = np.loadtxt("train_dig7.txt", usecols=range(0, ndig))
-A8 = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
-A9 = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
+def Difference(A, W, H):
+    WH = np.matmul(W, H)
+    D = np.subtract(A, WH)
+    return D
+
+
+###############################################################################
+
+
+def Norma(W, j):
+    sum = 0
+    for i in range(0, 784):
+        sum = sum + W[i, j] ** 2
+    norm = math.sqrt(sum)
+    return norm
+
+
+###############################################################################
+
+start_time = time.time()
+ndig = 100
+
+T0 = np.loadtxt("train_dig0.txt", usecols=range(0, ndig))
+T1 = np.loadtxt("train_dig1.txt", usecols=range(0, ndig))
+T2 = np.loadtxt("train_dig2.txt", usecols=range(0, ndig))
+T3 = np.loadtxt("train_dig3.txt", usecols=range(0, ndig))
+T4 = np.loadtxt("train_dig4.txt", usecols=range(0, ndig))
+T5 = np.loadtxt("train_dig5.txt", usecols=range(0, ndig))
+T6 = np.loadtxt("train_dig6.txt", usecols=range(0, ndig))
+T7 = np.loadtxt("train_dig7.txt", usecols=range(0, ndig))
+T8 = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
+T9 = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
+
+t1 = time.time() - start_time
+print("Reading training files - Done in ", t1)
+
 
 p = 10
 
-W0 = Train(A0, p)
-W1 = Train(A1, p)
-W2 = Train(A2, p)
-W3 = Train(A3, p)
-W4 = Train(A4, p)
-W5 = Train(A5, p)
-W6 = Train(A6, p)
-W7 = Train(A7, p)
-W8 = Train(A8, p)
-W9 = Train(A9, p)
+W0 = Train(T0, p)
+W1 = Train(T1, p)
+W2 = Train(T2, p)
+W3 = Train(T3, p)
+W4 = Train(T4, p)
+W5 = Train(T5, p)
+W6 = Train(T6, p)
+W7 = Train(T7, p)
+W8 = Train(T8, p)
+W9 = Train(T9, p)
+
+t2 = time.time() - start_time
+print("Training the AI - Done in ", t2)
 
 n_test = 10000
 Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
+
+# Wd * H = A
+WW0, A0 = Transformation(W0, Atest)
+WW1, A1 = Transformation(W1, Atest)
+WW2, A2 = Transformation(W2, Atest)
+WW3, A3 = Transformation(W3, Atest)
+WW4, A4 = Transformation(W4, Atest)
+WW5, A5 = Transformation(W5, Atest)
+WW6, A6 = Transformation(W6, Atest)
+WW7, A7 = Transformation(W7, Atest)
+WW8, A8 = Transformation(W8, Atest)
+WW9, A9 = Transformation(W9, Atest)
+
+H0 = Solution(WW0, A0)
+H1 = Solution(WW1, A1)
+H2 = Solution(WW2, A2)
+H3 = Solution(WW3, A3)
+H4 = Solution(WW4, A4)
+H5 = Solution(WW5, A5)
+H6 = Solution(WW6, A6)
+H7 = Solution(WW7, A7)
+H8 = Solution(WW8, A8)
+H9 = Solution(WW9, A9)
+
+t3 = time.time() - start_time
+print("Solving the equations - Done in ", t3)
+
+D0 = Difference(Atest, W0, H0)
+D1 = Difference(Atest, W1, H1)
+D2 = Difference(Atest, W2, H2)
+D3 = Difference(Atest, W3, H3)
+D4 = Difference(Atest, W4, H4)
+D5 = Difference(Atest, W5, H5)
+D6 = Difference(Atest, W6, H6)
+D7 = Difference(Atest, W7, H7)
+D8 = Difference(Atest, W8, H8)
+D9 = Difference(Atest, W9, H9)
+
+t4 = time.time() - start_time
+print("Analizing the similarities - Done in ", t4)
+
+results = np.empty((n_test))
+error = np.empty((n_test))
+
+for j in range(0, n_test):
+    Norms = np.empty((10))
+    Norms[0] = Norma(D0, j)
+    Norms[1] = Norma(D1, j)
+    Norms[2] = Norma(D2, j)
+    Norms[3] = Norma(D3, j)
+    Norms[4] = Norma(D4, j)
+    Norms[5] = Norma(D5, j)
+    Norms[6] = Norma(D6, j)
+    Norms[7] = Norma(D7, j)
+    Norms[8] = Norma(D8, j)
+    Norms[9] = Norma(D9, j)
+
+    index = np.argmin(Norms)
+    results[j] = index
+    error[j] = Norms[index]
