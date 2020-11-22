@@ -299,3 +299,4 @@ print("Isso é", Percent, "%")
 print("Resultados por dígito:")
 for i in range(0,10):
 	print(i, ": ", success[i]/avl[i] * 100, end= "%  |  ")
+print("\n")
