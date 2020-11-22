@@ -24,11 +24,11 @@ import numpy as np
 def Constants(W, j, k, i):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
-        c = 1 / np.sqrt(1 + t ** 2)
+        c = 1 / math.sqrt(1 + t ** 2)
         s = c * t
     else:
         t = -W[i, k] / W[j, k]
-        s = 1 / np.sqrt(1 + t ** 2)
+        s = 1 / math.sqrt(1 + t ** 2)
         c = s * t
     return s, c
 
@@ -61,11 +61,15 @@ def Solve(W, b):
     bm = b.shape[1]
     # Solução
     x = np.zeros((Wm, bm), dtype=float)
+    # for w in range(0, bm):
+    #     for k in range(Wm - 1, -1, -1):
+    #         som = 0
+    #         for j in range(k + 1, Wm):
+    #             som = som + W[k, j] * x[j, w]
+    #         x[k, w] = (b[k, w] - som) / W[k, k]
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
-            som = 0
-            for j in range(k + 1, Wm):
-                som = som + W[k, j] * x[j, w]
+            som = np.sum(W[k, k + 1 :] * x[k + 1 :, w])
             x[k, w] = (b[k, w] - som) / W[k, k]
     return x
 
@@ -77,7 +81,7 @@ def Normalize(W):
     Wn = W.shape[0]
     Wm = W.shape[1]
     for j in range(0, Wm):
-        s = np.sqrt((np.sum(W[0:Wn, j] ** 2)))
+        s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
         W[0:Wn, j] = W[0:Wn, j] / s
     return W
 
@@ -160,11 +164,16 @@ def Difference(A, W, H):
 
 print("Iniciando o IdentificadorDeDígitos.py", end="\n\n")
 
+ndig = input("Escolha o número de dígitos para o treinamento da AI (max. 4000): ")
+ndig = int(ndig)
+p = input("Escolha o nível de precição da AI (max. 15): ")
+p = int(p)
+
+print("\n")
 
 print("Lendo as imagens...")
 start_time = time.time()
 
-ndig = 1000
 real = np.loadtxt("test_index.txt")
 
 # Criando a array 3D que guardará os dados das imagens
@@ -173,15 +182,6 @@ for i in range(0, 10):
     Images[:, :, i] = (
         np.loadtxt("train_dig" + str(i) + ".txt", usecols=range(0, ndig)) / 255.0
     )
-# Images[:, :, 1] = np.loadtxt("train_dig1.txt", usecols=range(0, ndig))
-# Images[:, :, 2] = np.loadtxt("train_dig2.txt", usecols=range(0, ndig))
-# Images[:, :, 3] = np.loadtxt("train_dig3.txt", usecols=range(0, ndig))
-# Images[:, :, 4] = np.loadtxt("train_dig4.txt", usecols=range(0, ndig))
-# Images[:, :, 5] = np.loadtxt("train_dig5.txt", usecols=range(0, ndig))
-# Images[:, :, 6] = np.loadtxt("train_dig6.txt", usecols=range(0, ndig))
-# Images[:, :, 7] = np.loadtxt("train_dig7.txt", usecols=range(0, ndig))
-# Images[:, :, 8] = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
-# Images[:, :, 9] = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
 
 # Processando as imagens
 for i in range(0, 10):
@@ -198,7 +198,6 @@ print("O tempo total é de", t1, "segundos", end="\n\n")
 
 print("Criando os parâmetros da AI...")
 
-p = 10
 W = np.zeros((784, p, 10), dtype=float)
 for i in range(0, 10):
     W[:, :, i] = Train(Images[:, :, i], p)
@@ -236,7 +235,7 @@ print("Comparando os dígitos escritos com o nosso banco de dados...")
 
 D = np.zeros((784, n_test, 10))
 for i in range(0, 10):
-    D[:, :, i] = Difference(Atest, W[:, :, i], H[:, :, i])
+    D[:, :, i] = np.subtract(Atest, np.matmul(W[:, :, i], H[:, :, i]))
 
 t4 = time.time() - start_time
 t34 = t4 - t3
@@ -257,7 +256,7 @@ bla = 0
 
 for j in range(0, n_test):
     for i in range(0, 10):
-        norm = np.sqrt(np.sum(D[:, j, i] ** 2))
+        norm = math.sqrt(np.sum(D[:, j, i] ** 2))
         if i == 0:
             error[j] = norm
             results[j] = i
@@ -268,11 +267,6 @@ for j in range(0, n_test):
 
     if results[j] == real[j]:
         bla += 1
-
-    # temp = results[j]
-    # # print(temp)
-    # if temp == real[j]:
-    #     success[temp] = success[temp] + 1
 
 t5 = time.time() - start_time
 t45 = t5 - t4
