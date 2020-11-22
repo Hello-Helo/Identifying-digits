@@ -11,19 +11,12 @@
 #
 ###############################################################################
 
+import cProfile
 import math
 import pdb
 import time
 
 import numpy as np
-
-###############################################################################
-
-
-def Rotgivens(W, n, m, i, j, c, s):
-    W[i, 0:m], W[j, 0:m] = c * W[i, 0:m] - s * W[j, 0:m], s * W[i, 0:m] + c * W[j, 0:m]
-    return W
-
 
 ###############################################################################
 
@@ -43,10 +36,9 @@ def Constants(W, j, k, i):
 ###############################################################################
 
 
-def Transformation(W, b):
+def Solve(W, b):
     Wn = W.shape[0]
     Wm = W.shape[1]
-    bn = b.shape[0]
     bm = b.shape[1]
     for k in range(0, Wm):
         for j in range(Wn - 1, k, -1):
@@ -55,16 +47,16 @@ def Transformation(W, b):
                 const = Constants(W, j, k, i)
                 s = const[0]
                 c = const[1]
-                W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                b = Rotgivens(b, bn, bm, i, j, c, s)
-    return W, b
+                W[i, 0:Wm], W[j, 0:Wm] = (
+                    c * W[i, 0:Wm] - s * W[j, 0:Wm],
+                    s * W[i, 0:Wm] + c * W[j, 0:Wm],
+                )
+                b[i, 0:bm], b[j, 0:bm] = (
+                    c * b[i, 0:bm] - s * b[j, 0:bm],
+                    s * b[i, 0:bm] + c * b[j, 0:bm],
+                )
 
-
-###############################################################################
-
-
-def Solve(W, b):
-    # Tmanho das matrizes
+    # Tamanho das matrizes
     Wm = W.shape[1]
     bm = b.shape[1]
     # Solução
@@ -93,27 +85,15 @@ def Normalize(W):
 ###############################################################################
 
 
-def Make_positive(W):
-    Wn = W.shape[0]
-    Wm = W.shape[1]
-    for i in range(0, Wn):
-        for j in range(0, Wm):
-            W[i, j] = max(0, W[i, j])
-    return W
-
-
-###############################################################################
-
-
-def Erro(A, W, H):
-    erro = 0
-    WH = np.matmul(W, H)
-    An = A.shape[0]
-    Am = A.shape[1]
-    for i in range(0, An):
-        for j in range(0, Am):
-            erro = erro + (A[i, j] - WH[i, j]) ** 2
-    return erro
+# def Erro(A, W, H):
+#     erro = 0
+#     WH = np.matmul(W, H)
+#     An = A.shape[0]
+#     Am = A.shape[1]
+#     for i in range(0, An):
+#         for j in range(0, Am):
+#             erro = erro + (A[i, j] - WH[i, j]) ** 2
+#     return erro
 
 
 ###############################################################################
@@ -145,28 +125,23 @@ def Train(A, p):
     while Edif > 0.000001 and iterations < 100:
         W = Normalize(W)
 
-        Transf = Transformation(W, A)
-        W = Transf[0]
-        A = Transf[1]
         H = Solve(W, A)
 
         A = np.copy(Aprime)
 
-        H = Make_positive(H)
+        H = np.clip(H, 0, None)
         At = np.transpose(A).copy()
         Ht = np.transpose(H).copy()
 
-        Transf = Transformation(Ht, At)
-        Ht = Transf[0]
-        At = Transf[1]
         Wt = Solve(Ht, At)
 
         A = np.copy(Aprime)
 
         W = np.transpose(Wt).copy()
-        W = Make_positive(W)
+        W = np.clip(W, 0, None)
         Eprev = E
-        E = Erro(A, W, H)
+        E = np.linalg.norm(np.matmul(W, H) - A) ** 2
+        # E = Erro(A, W, H)
         Edif = abs(E - Eprev)
         iterations += 1
 
@@ -201,21 +176,24 @@ print("Iniciando o IdentificadorDeDígitos.py", end="\n\n")
 print("Lendo as imagens...")
 start_time = time.time()
 
-ndig = 100
+ndig = 4000
 real = np.loadtxt("test_index.txt")
 
 # Criando a array 3D que guardará os dados das imagens
 Images = np.zeros((784, ndig, 10), dtype=float)
-Images[:, :, 0] = np.loadtxt("train_dig0.txt", usecols=range(0, ndig))
-Images[:, :, 1] = np.loadtxt("train_dig1.txt", usecols=range(0, ndig))
-Images[:, :, 2] = np.loadtxt("train_dig2.txt", usecols=range(0, ndig))
-Images[:, :, 3] = np.loadtxt("train_dig3.txt", usecols=range(0, ndig))
-Images[:, :, 4] = np.loadtxt("train_dig4.txt", usecols=range(0, ndig))
-Images[:, :, 5] = np.loadtxt("train_dig5.txt", usecols=range(0, ndig))
-Images[:, :, 6] = np.loadtxt("train_dig6.txt", usecols=range(0, ndig))
-Images[:, :, 7] = np.loadtxt("train_dig7.txt", usecols=range(0, ndig))
-Images[:, :, 8] = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
-Images[:, :, 9] = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
+for i in range(0, 10):
+    Images[:, :, i] = (
+        np.loadtxt("train_dig" + str(i) + ".txt", usecols=range(0, ndig)) / 255.0
+    )
+# Images[:, :, 1] = np.loadtxt("train_dig1.txt", usecols=range(0, ndig))
+# Images[:, :, 2] = np.loadtxt("train_dig2.txt", usecols=range(0, ndig))
+# Images[:, :, 3] = np.loadtxt("train_dig3.txt", usecols=range(0, ndig))
+# Images[:, :, 4] = np.loadtxt("train_dig4.txt", usecols=range(0, ndig))
+# Images[:, :, 5] = np.loadtxt("train_dig5.txt", usecols=range(0, ndig))
+# Images[:, :, 6] = np.loadtxt("train_dig6.txt", usecols=range(0, ndig))
+# Images[:, :, 7] = np.loadtxt("train_dig7.txt", usecols=range(0, ndig))
+# Images[:, :, 8] = np.loadtxt("train_dig8.txt", usecols=range(0, ndig))
+# Images[:, :, 9] = np.loadtxt("train_dig9.txt", usecols=range(0, ndig))
 
 # Processando as imagens
 for i in range(0, 10):
@@ -232,12 +210,11 @@ print("O tempo total é de", t1, "segundos", end="\n\n")
 
 print("Criando os parâmetros da AI...")
 
-p = 10
+p = 15
 W = np.zeros((784, p, 10), dtype=float)
 for i in range(0, 10):
     W[:, :, i] = Train(Images[:, :, i], p)
-
-print(W[:, :, 2])
+    print("  Dígito", i, "treinado!")
 
 t2 = time.time() - start_time
 t12 = t2 - t1
@@ -256,8 +233,7 @@ Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
 # Wd * H = A
 H = np.zeros((p, n_test, 10))
 for i in range(0, 10):
-    a, b = Transformation(W[:, :, i].copy(), Atest.copy())
-    H[:, :, i] = Solve(a, b)
+    H[:, :, i] = Solve(W[:, :, i].copy(), Atest.copy())
 
 t3 = time.time() - start_time
 t23 = t3 - t2
@@ -293,7 +269,7 @@ bla = 0
 
 for j in range(0, n_test):
     for i in range(0, 10):
-        norm = Norma(D[:, :, i], j)
+        norm = np.linalg.norm(D[:, j, i])
         if i == 0:
             error[j] = norm
             results[j] = i
