@@ -256,7 +256,7 @@ Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
 # Wd * H = A
 H = np.zeros((p, n_test, 10))
 for i in range(0, 10):
-    a, b = Transformation(W[:, :, i], Atest.copy())
+    a, b = Transformation(W[:, :, i].copy(), Atest.copy())
     H[:, :, i] = Solve(a, b)
 
 t3 = time.time() - start_time
@@ -289,6 +289,7 @@ results = np.zeros((n_test), dtype=int)
 error = np.zeros((n_test))
 
 success = np.zeros((10))
+bla = 0
 
 for j in range(0, n_test):
     for i in range(0, 10):
@@ -301,10 +302,13 @@ for j in range(0, n_test):
                 error[j] = norm
                 results[j] = i
 
-    temp = results[j]
-    print(temp)
-    if temp == real[j]:
-        success[temp] = success[temp] + 1
+    if results[j] == real[j]:
+        bla += 1
+
+    # temp = results[j]
+    # # print(temp)
+    # if temp == real[j]:
+    #     success[temp] = success[temp] + 1
 
 t5 = time.time() - start_time
 t45 = t5 - t4
@@ -312,7 +316,7 @@ print("Feito em", t45, "segundos")
 print("O tempo total é de", t4, "segundos", end="\n\n")
 
 print("Os resultados:")
-Sum = np.sum(success)
-Percent = (Sum / n_test) * 100
-print("Conseguimos", Sum, "dígitos indentificados corretamente")
+# Sum = np.sum(success)
+Percent = (bla / n_test) * 100
+print("Conseguimos", bla, "dígitos indentificados corretamente")
 print("Isso é", Percent, "%")
