@@ -6,14 +6,12 @@
 #
 #     Terceira tarefa do EP de Computação III
 #
-#
-#
+#     Esse aquivo le o banco de dados e treia a AI para identificar os números
+#     no arquivo test_images.txt
 #
 ###############################################################################
 
-import cProfile
 import math
-import pdb
 import time
 
 import numpy as np
@@ -21,6 +19,7 @@ import numpy as np
 ###############################################################################
 
 
+# Cálculo das constantes para o RotGivens
 def Constants(W, j, k, i):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
@@ -36,10 +35,15 @@ def Constants(W, j, k, i):
 ###############################################################################
 
 
+# Resolve um sistema de equações qualquer com RotGivens
 def Solve(W, b):
+
+    # Tamanho das matrizes
     Wn = W.shape[0]
     Wm = W.shape[1]
     bm = b.shape[1]
+
+    # Aplica RotGivens nas matrizes W e b
     for k in range(0, Wm):
         for j in range(Wn - 1, k, -1):
             i = j - 1
@@ -56,192 +60,203 @@ def Solve(W, b):
                     s * b[i, 0:bm] + c * b[j, 0:bm],
                 )
 
-    # Tamanho das matrizes
-    Wm = W.shape[1]
-    bm = b.shape[1]
-    # Solução
+    # Acha a solução
     x = np.zeros((Wm, bm), dtype=float)
-    # for w in range(0, bm):
-    #     for k in range(Wm - 1, -1, -1):
-    #         som = 0
-    #         for j in range(k + 1, Wm):
-    #             som = som + W[k, j] * x[j, w]
-    #         x[k, w] = (b[k, w] - som) / W[k, k]
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
             som = np.sum(W[k, k + 1 :] * x[k + 1 :, w])
             x[k, w] = (b[k, w] - som) / W[k, k]
+
+    # Retorna a solução
     return x
 
 
 ###############################################################################
 
 
+# Aplica a normalização para cada coluna individualmente
 def Normalize(W):
+
+    # Tamanho das matrizes
     Wn = W.shape[0]
     Wm = W.shape[1]
+
+    # Cada coluna tem seus valores divididos pelo quadrado da soma de todos os
+    # termos
     for j in range(0, Wm):
         s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
         W[0:Wn, j] = W[0:Wn, j] / s
+
+    # Retorna a matriz normalizada
     return W
 
 
 ###############################################################################
 
 
+# Calcula o erro quadrado entre 3 matrizes
 def Erro(A, W, H):
-    erro = 0
-    WH = np.matmul(W, H)
+
+    # Tamanho da matriz
     Am = A.shape[1]
+
+    # Soma o quadrdo de todos os termos da diferença
+    WH = np.matmul(W, H)
+    erro = 0
     for j in range(0, Am):
         erro = erro + np.sum((A[:, j] - WH[:, j]) ** 2)
+
+    # Retorna o erro
     return erro
 
 
 ###############################################################################
 
 
-def Image_processing(W, m):
-    for j in range(0, m):
-        W[0:784, j] = W[0:784, j] / 255.0
-    return W
-
-
-###############################################################################
-
-
+# Cria os parâmetros da AI para a identificação dos dígitos
 def Train(A, p):
+
+    # Tamanho e definição das matrizes (W será o parâmetro)
     An = A.shape[0]
     Am = A.shape[1]
     W = np.random.random(size=(An, p))
     H = np.zeros((p, Am), dtype=float)
 
+    # Guarda uma cópia dos dados de cada um dos dígitos
     Aprime = np.copy(A)
 
+    # Definições arbitrárias do erro e contagem de iterações para o loop while
     E = 10000
     Edif = 10000
     iterations = 0
 
-    A = np.copy(Aprime)
-
+    # Inicialicação do while para definição do parâmetro
     while Edif > 0.000001 and iterations < 100:
+
+        # Normalização do pré-parâmetro
         W = Normalize(W)
 
+        # Criação de uma matriz auxiliar positiva para refinamento do parâmetro
         H = Solve(W, A)
+        H = np.clip(H, 0, None)
 
+        # Volta dos dados origináis dos digitos
         A = np.copy(Aprime)
 
-        H = np.clip(H, 0, None)
+        # Transposição para o refinamento do parâmetro
         At = np.transpose(A).copy()
         Ht = np.transpose(H).copy()
 
+        # Definindo um parâmetro mais refinado
         Wt = Solve(Ht, At)
-
-        A = np.copy(Aprime)
-
         W = np.transpose(Wt).copy()
         W = np.clip(W, 0, None)
+
+        # Volta dos dados origináis dos digitos
+        A = np.copy(Aprime)
+
+        # Calculo da diferença do erro entre os dois ultimos parâmetros
         Eprev = E
-        # E = np.linalg.norm(np.matmul(W, H) - A) ** 2
         E = Erro(A, W, H)
         Edif = abs(E - Eprev)
+
+        # Mantem conhecimento do número refinamento do parâmetro
         iterations += 1
 
+    # Retorna o parâmetro após cumprir os requerimentos (while)
     return W
 
 
 ###############################################################################
 
 
-def Difference(A, W, H):
-    WH = np.matmul(W, H)
-    D = np.subtract(A, WH)
-    return D
-
-
-###############################################################################
-
-
+# Iniciando o programa
 print("Iniciando o IdentificadorDeDígitos.py", end="\n\n")
 
-ndig = input("Escolha o número de dígitos para o treinamento da AI (max. 4000): ")
-ndig = int(ndig)
-p = input("Escolha o nível de precição da AI (max. 15): ")
-p = int(p)
 
+# Os parâmetros do Machine Learning são escolhidos pelu usuário
+ndig = int(input("Número de dígitos para o treinamento da AI (max. 4000): "))
+p = int(input("Nível de precição da AI (max. 15): "))
 print("\n")
 
-print("Lendo as imagens...")
+
+#
+
+
+# Primeira parte do processo - Ler as imagens para o Machine Learning
+print("Lendo as imagens para o Machine Learning...")
 start_time = time.time()
 
+
+# Recebe uma array com os dígitos a serem identificados
+n_test = 10000
+Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
+
+
+# Recebe uma array com a resposta dos dados a serem identificados para compa-
+# ração dos resultados
 real = np.loadtxt("test_index.txt")
 
-# Criando a array 3D que guardará os dados das imagens
+
+# Cria uma array 3D que guardará os dados das imagens para o treino da AI
 Images = np.zeros((784, ndig, 10), dtype=float)
 for i in range(0, 10):
     Images[:, :, i] = (
         np.loadtxt("train_dig" + str(i) + ".txt", usecols=range(0, ndig)) / 255.0
     )
 
-# Processando as imagens
-for i in range(0, 10):
-    Images[:, :, i] = Image_processing(Images[:, :, i], ndig)
 
-# Controle do tempo
+# Controle do tempo da primeira parte
 t1 = time.time() - start_time
 print("Feito em", t1, "segundos")
 print("O tempo total é de", t1, "segundos", end="\n\n")
 
 
-########################################################
+#
 
 
+# Segunda parte do processo - Treinar a AI
 print("Criando os parâmetros da AI...")
 
+
+# Treinamento para a criação do parâmetro de identificação dos dígitos
 W = np.zeros((784, p, 10), dtype=float)
 for i in range(0, 10):
     W[:, :, i] = Train(Images[:, :, i], p)
     print("  Dígito", i, "treinado!")
 
+
+# Controle do tempo da segunda parte
 t2 = time.time() - start_time
 t12 = t2 - t1
 print("Feito em", t12, "seconds")
 print("O tempo total é de", t2, "segundos", end="\n\n")
 
 
-########################################################
+#
 
 
-print("Analizando os dígitos escritos...")
+# Terceira parte do processo - Comparar digitos escritos com os dados
+print("Comparando os dígitos escritos com o nosso banco de dados...")
 
-n_test = 10000
-Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
 
-# Wd * H = A
+# Criação de um parâmetro para comparar os digitos escritos com o dados da AI
 H = np.zeros((p, n_test, 10))
 for i in range(0, 10):
     H[:, :, i] = Solve(W[:, :, i].copy(), Atest.copy())
 
-t3 = time.time() - start_time
-t23 = t3 - t2
-print("Feito em", t23, "segundos")
-print("O tempo total é de", t3, "segundos", end="\n\n")
 
-
-########################################################
-
-
-print("Comparando os dígitos escritos com o nosso banco de dados...")
-
+# Achar a diferença dos parâmetros acima com os dados da AI
 D = np.zeros((784, n_test, 10))
 for i in range(0, 10):
     D[:, :, i] = np.subtract(Atest, np.matmul(W[:, :, i], H[:, :, i]))
 
-t4 = time.time() - start_time
-t34 = t4 - t3
-print("Feito em", t34, "segundos")
-print("O tempo total é de", t4, "segundos", end="\n\n")
 
+# Controle do tempo da terceira parte
+t3 = time.time() - start_time
+t23 = t3 - t2
+print("Feito em", t23, "segundos")
+print("O tempo total é de", t3, "segundos", end="\n\n")
 
 ########################################################
 
@@ -268,9 +283,9 @@ for j in range(0, n_test):
     if results[j] == real[j]:
         bla += 1
 
-t5 = time.time() - start_time
-t45 = t5 - t4
-print("Feito em", t45, "segundos")
+t4 = time.time() - start_time
+t34 = t4 - t3
+print("Feito em", t34, "segundos")
 print("O tempo total é de", t4, "segundos", end="\n\n")
 
 print("Os resultados:")
