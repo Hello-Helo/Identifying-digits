@@ -282,7 +282,10 @@ for j in range(0, n_test):
 
     if results[j] == real[j]:
         bla += 1
-
+        success[int(real[j])] += 1
+        avl[int(real[j])] += 1
+    else:
+    	avl[int(real[j])] += 1
 t4 = time.time() - start_time
 t34 = t4 - t3
 print("Feito em", t34, "segundos")
@@ -293,3 +296,6 @@ print("Os resultados:")
 Percent = (bla / n_test) * 100
 print("Conseguimos", bla, "dígitos indentificados corretamente")
 print("Isso é", Percent, "%")
+print("Resultados por dígito:")
+for i in range(0,10):
+	print(i, ": ", success[i]/avl[i] * 100, end= "%  |  ")
