@@ -24,11 +24,11 @@ import numpy as np
 def Constants(W, j, k, i):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
-        c = 1 / math.sqrt(1 + t ** 2)
+        c = 1 / np.sqrt(1 + t ** 2)
         s = c * t
     else:
         t = -W[i, k] / W[j, k]
-        s = 1 / math.sqrt(1 + t ** 2)
+        s = 1 / np.sqrt(1 + t ** 2)
         c = s * t
     return s, c
 
@@ -77,7 +77,7 @@ def Normalize(W):
     Wn = W.shape[0]
     Wm = W.shape[1]
     for j in range(0, Wm):
-        s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
+        s = np.sqrt((np.sum(W[0:Wn, j] ** 2)))
         W[0:Wn, j] = W[0:Wn, j] / s
     return W
 
@@ -85,15 +85,13 @@ def Normalize(W):
 ###############################################################################
 
 
-# def Erro(A, W, H):
-#     erro = 0
-#     WH = np.matmul(W, H)
-#     An = A.shape[0]
-#     Am = A.shape[1]
-#     for i in range(0, An):
-#         for j in range(0, Am):
-#             erro = erro + (A[i, j] - WH[i, j]) ** 2
-#     return erro
+def Erro(A, W, H):
+    erro = 0
+    WH = np.matmul(W, H)
+    Am = A.shape[1]
+    for j in range(0, Am):
+        erro = erro + np.sum((A[:, j] - WH[:, j]) ** 2)
+    return erro
 
 
 ###############################################################################
@@ -140,8 +138,8 @@ def Train(A, p):
         W = np.transpose(Wt).copy()
         W = np.clip(W, 0, None)
         Eprev = E
-        E = np.linalg.norm(np.matmul(W, H) - A) ** 2
-        # E = Erro(A, W, H)
+        # E = np.linalg.norm(np.matmul(W, H) - A) ** 2
+        E = Erro(A, W, H)
         Edif = abs(E - Eprev)
         iterations += 1
 
@@ -160,23 +158,13 @@ def Difference(A, W, H):
 ###############################################################################
 
 
-def Norma(W, j):
-    sum = 0
-    for i in range(0, 784):
-        sum = sum + W[i, j] ** 2
-    norm = math.sqrt(sum)
-    return norm
-
-
-###############################################################################
-
 print("Iniciando o IdentificadorDeDígitos.py", end="\n\n")
 
 
 print("Lendo as imagens...")
 start_time = time.time()
 
-ndig = 4000
+ndig = 1000
 real = np.loadtxt("test_index.txt")
 
 # Criando a array 3D que guardará os dados das imagens
@@ -210,7 +198,7 @@ print("O tempo total é de", t1, "segundos", end="\n\n")
 
 print("Criando os parâmetros da AI...")
 
-p = 15
+p = 10
 W = np.zeros((784, p, 10), dtype=float)
 for i in range(0, 10):
     W[:, :, i] = Train(Images[:, :, i], p)
@@ -269,7 +257,7 @@ bla = 0
 
 for j in range(0, n_test):
     for i in range(0, 10):
-        norm = np.linalg.norm(D[:, j, i])
+        norm = np.sqrt(np.sum(D[:, j, i] ** 2))
         if i == 0:
             error[j] = norm
             results[j] = i
