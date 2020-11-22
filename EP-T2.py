@@ -13,11 +13,8 @@
 
 
 import math
-import sys
 
 import numpy as np
-
-np.set_printoptions(threshold=sys.maxsize)
 
 ###############################################################################
 
@@ -25,6 +22,19 @@ np.set_printoptions(threshold=sys.maxsize)
 def Rotgivens(W, n, m, i, j, c, s):
     W[i, 0:m], W[j, 0:m] = c * W[i, 0:m] - s * W[j, 0:m], s * W[i, 0:m] + c * W[j, 0:m]
     return W
+
+
+###############################################################################
+
+
+def Is_tsup(W, Wn, Wm):
+    is_valid = True
+    for collum in range(0, Wm):
+        for line in range(collum + 1, Wn):
+            if W[line][collum] != 0:
+                is_valid = False
+                return is_valid
+    return is_valid
 
 
 ###############################################################################
@@ -45,9 +55,12 @@ def Constants(W, j, k, i):
 ###############################################################################
 
 
-def Transformation(W, b):
-    Wn = np.atleast_2d(W).shape[0]
-    Wm = np.atleast_2d(W).shape[1]
+def Solution(W, b):
+
+    Wn = W.shape[0]
+    Wm = W.shape[1]
+    bn = b.shape[0]
+    bm = b.shape[1]
     for k in range(0, Wm):
         for j in range(Wn - 1, k, -1):
             i = j - 1
@@ -56,19 +69,13 @@ def Transformation(W, b):
                 s = const[0]
                 c = const[1]
                 W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                b = Rotgivens(b, Wn, Wm, i, j, c, s)
-    return W, b
+                b = Rotgivens(b, bn, bm, i, j, c, s)
 
-
-###############################################################################
-
-
-def Solution(W, b):
-    # Tmanho das matrizes
-    Wm = np.atleast_2d(W).shape[1]
-    bm = np.atleast_2d(b).shape[1]
+    # Tamanho das matrizes
+    Wm = W.shape[1]
+    bm = b.shape[1]
     # Solução
-    x = np.empty((Wm, bm), dtype=float)
+    x = np.zeros((Wm, bm), dtype=float)
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
             som = 0
@@ -86,9 +93,6 @@ def Normalize(W):
     Wm = np.atleast_2d(W).shape[1]
     for j in range(0, Wm):
         s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
-        # print(s)
-        # for i in range(0, An):
-        #     W[i, j] = W[i, j] / s
         W[0:Wn, j] = W[0:Wn, j] / s
     return W
 
@@ -110,7 +114,7 @@ def Make_positive(W):
 
 def Erro(A, W, H):
     erro = 0
-    WH = np.matmul(W, H)
+    WH = np.dot(W, H)
     An = np.atleast_2d(A).shape[0]
     Am = np.atleast_2d(A).shape[1]
     for i in range(0, An):
@@ -118,21 +122,9 @@ def Erro(A, W, H):
             erro = erro + (A[i, j] - WH[i, j]) ** 2
     return erro
 
-
 ###############################################################################
 
 
-def Image_processing(W, m):
-    for j in range(0, m):
-        W[0:784, j] = W[0:784, j] / 255
-    return W
-
-
-###############################################################################
-
-
-# A = np.loadtxt("train_dig0.txt", usecols=range(0, 5))
-# A = Image_processing(A, 5)
 A = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]])
 An = np.atleast_2d(A).shape[0]
 Am = np.atleast_2d(A).shape[1]
@@ -146,69 +138,37 @@ Arb = 2
 W = np.random.random(size=(An, Arb))
 H = np.empty((Arb, Am), dtype=float)
 
-# print("A matriz A original:")
-# print(A, end="\n\n")
+print("A matriz A original:")
+print(A, end="\n")
 
 Aprime = np.copy(A)
 
 E = 10
-Edif = 10
 iterations = 0
 
-while Edif > 0.000001 and iterations < 100:
-    # print("ITERATION", iterations)
+while E > 0.000001 and iterations < 20:
+    print("ITERATIONS ", end ="\n\n")
     print(W)
     W = Normalize(W)
-
-    Transf = Transformation(W, A)
-    W = Transf[0]
-    A = Transf[1]
-    # print("A matriz W:")
-    # print(W, end="\n")
-    # print("A matriz A:")
-    # print(A, end="\n")
+ 
     H = Solution(W, A)
-
+    print(np.dot(W,H))
+    
     A = np.copy(Aprime)
 
-    # print("A matriz A:")
-    # print(A, end="\n")
-
-    # print("A matriz H:")
-    # print(H, end="\n")
-
     H = Make_positive(H)
-    # print("A matriz H:")
-    # print(H, end="\n")
-    At = np.transpose(A).copy()
-    Ht = np.transpose(H).copy()
 
-    Transf = Transformation(Ht, At)
-    Ht = Transf[0]
-    At = Transf[1]
-    # print("A matriz Ht:")
-    # print(Ht, end="\n")
-    # print("A matriz At:")
-    # print(A, end="\n")
+    At = np.transpose(np.copy(A))
+    Ht = np.transpose(np.copy(H))
+
     Wt = Solution(Ht, At)
 
     A = np.copy(Aprime)
 
-    W = np.transpose(Wt).copy()
-    # print("A matriz W:")
-    # print(W, end="\n")
+    W = np.transpose(Wt)
     W = Make_positive(W)
-    # print("A matriz W:")
-    # print(W, end="\n")
 
-    # print("A matriz WH:")
-    # print(np.matmul(W, H), end="\n")
-    # print("A matriz A:")
-    # print(A, end="\n")
-    Eprev = E
-    E = Erro(A, W, H)
-    Edif = abs(E - Eprev)
-    # print("ERROR = ", E, end="\n\n")
+    E = E - Erro(A, W, H)
+    
     iterations += 1
-
-print("Done!")
+    print(iterations)
