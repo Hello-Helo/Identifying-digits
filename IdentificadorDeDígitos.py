@@ -21,6 +21,8 @@ import numpy as np
 
 # Cálculo das constantes para o RotGivens
 def Constants(W, j, k, i):
+
+    # Acha as constantes a partir da posição no vetor
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
         c = 1 / math.sqrt(1 + t ** 2)
@@ -173,7 +175,6 @@ def Train(A, p):
 # Iniciando o programa
 print("Iniciando o IdentificadorDeDígitos.py", end="\n\n")
 
-
 # Os parâmetros do Machine Learning são escolhidos pelu usuário
 ndig = int(input("Número de dígitos para o treinamento da AI (max. 4000): "))
 p = int(input("Nível de precição da AI (max. 15): "))
@@ -187,29 +188,26 @@ print("\n")
 print("Lendo as imagens para o Machine Learning...")
 start_time = time.time()
 
-
 # Recebe uma array com os dígitos a serem identificados
 n_test = 10000
-Atest = np.loadtxt("test_images.txt", usecols=range(0, n_test))
-
+Atest = np.loadtxt("dados_mnist/test_images.txt", usecols=range(0, n_test))
 
 # Recebe uma array com a resposta dos dados a serem identificados para compa-
 # ração dos resultados
-real = np.loadtxt("test_index.txt")
-
+real = np.loadtxt("dados_mnist/test_index.txt")
 
 # Cria uma array 3D que guardará os dados das imagens para o treino da AI
 Images = np.zeros((784, ndig, 10), dtype=float)
 for i in range(0, 10):
     Images[:, :, i] = (
-        np.loadtxt("train_dig" + str(i) + ".txt", usecols=range(0, ndig)) / 255.0
+        np.loadtxt("dados_mnist/train_dig" + str(i) + ".txt", usecols=range(0, ndig))
+        / 255.0
     )
-
 
 # Controle do tempo da primeira parte
 t1 = time.time() - start_time
-print("Feito em", t1, "segundos")
-print("O tempo total é de", t1, "segundos", end="\n\n")
+print("  Feito em", t1, "segundos")
+print("  O tempo total é de", t1, "segundos", end="\n\n")
 
 
 #
@@ -218,19 +216,20 @@ print("O tempo total é de", t1, "segundos", end="\n\n")
 # Segunda parte do processo - Treinar a AI
 print("Criando os parâmetros da AI...")
 
-
 # Treinamento para a criação do parâmetro de identificação dos dígitos
 W = np.zeros((784, p, 10), dtype=float)
 for i in range(0, 10):
+    # inicio = time.time()
     W[:, :, i] = Train(Images[:, :, i], p)
-    print("  Dígito", i, "treinado!")
-
+    # fim = time.time()
+    # print("    Dígito", i, "treinado em", fim - inicio, "segundos")
+    print(i)
 
 # Controle do tempo da segunda parte
 t2 = time.time() - start_time
 t12 = t2 - t1
-print("Feito em", t12, "seconds")
-print("O tempo total é de", t2, "segundos", end="\n\n")
+print("  Feito em", t12, "seconds")
+print("  O tempo total é de", t2, "segundos", end="\n\n")
 
 
 #
@@ -239,36 +238,41 @@ print("O tempo total é de", t2, "segundos", end="\n\n")
 # Terceira parte do processo - Comparar digitos escritos com os dados
 print("Comparando os dígitos escritos com o nosso banco de dados...")
 
-
 # Criação de um parâmetro para comparar os digitos escritos com o dados da AI
 H = np.zeros((p, n_test, 10))
 for i in range(0, 10):
     H[:, :, i] = Solve(W[:, :, i].copy(), Atest.copy())
-
 
 # Achar a diferença dos parâmetros acima com os dados da AI
 D = np.zeros((784, n_test, 10))
 for i in range(0, 10):
     D[:, :, i] = np.subtract(Atest, np.matmul(W[:, :, i], H[:, :, i]))
 
-
 # Controle do tempo da terceira parte
 t3 = time.time() - start_time
 t23 = t3 - t2
-print("Feito em", t23, "segundos")
-print("O tempo total é de", t3, "segundos", end="\n\n")
-
-########################################################
+print("  Feito em", t23, "segundos")
+print("  O tempo total é de", t3, "segundos", end="\n\n")
 
 
+#
+
+
+# Quarta parte do processo - Identificar os digitos
 print("Identificando os dígitos...")
 
+# Criar matrizes para guardar o dígito identificado e o erro com os dados da AI
 results = np.zeros((n_test), dtype=int)
 error = np.zeros((n_test))
 
+# Criação dos locais para guardar o número de respostas corretas
 success = np.zeros((10))
-bla = 0
+total = 0
 
+# Array com o total de aparições reais de um determinado dígito
+avl = np.zeros((10))
+
+# Compara o resultado identificado com o real e guarda o resultado em results[]
 for j in range(0, n_test):
     for i in range(0, 10):
         norm = math.sqrt(np.sum(D[:, j, i] ** 2))
@@ -280,16 +284,33 @@ for j in range(0, n_test):
                 error[j] = norm
                 results[j] = i
 
-    if results[j] == real[j]:
-        bla += 1
+    # Guarda o número de aparições reais
+    avl[int(real[j])] += 1
 
+    # Conta o número de resultados corretos total e do dígito específico
+    if results[j] == real[j]:
+        total += 1
+        success[int(real[j])] += 1
+
+# Controle do tempo da terceira parte
 t4 = time.time() - start_time
 t34 = t4 - t3
-print("Feito em", t34, "segundos")
-print("O tempo total é de", t4, "segundos", end="\n\n")
+print("  Feito em", t34, "segundos")
+print("  O tempo total é de", t4, "segundos", end="\n\n")
 
-print("Os resultados:")
-# Sum = np.sum(success)
-Percent = (bla / n_test) * 100
-print("Conseguimos", bla, "dígitos indentificados corretamente")
-print("Isso é", Percent, "%")
+
+#
+
+
+# Quinta parte do processo - Os resultados
+print("Os resultados gerais:")
+
+# Calcula a porgentagem geral de acertos
+Percent = (total / n_test) * 100
+print("  Conseguimos", total, "dígitos indentificados corretamente")
+print("  Isso é", Percent, "%")
+
+# Calcula a porcentagem de acerto por digito
+print("Resultados por dígito:")
+for i in range(0, 10):
+    print("  ", i, ": ", success[i] / avl[i] * 100, end="% \n")
