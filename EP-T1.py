@@ -62,17 +62,18 @@ def Constants(W, j, k, i):
 
 
 def Solution(W, b):
-    # Tmanho das matrizes
-    Wm = np.atleast_2d(W).shape[1]
-    bm = np.atleast_2d(b).shape[1]
-    # Solução
-    x = np.empty((Wm, bm), dtype=float)
+    # Tamanho das matrizes
+    Wm = W.shape[1]
+    bm = b.shape[1]
+
+    # Acha a solução
+    x = np.zeros((Wm, bm), dtype=float)
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
-            som = 0
-            for j in range(k + 1, Wm):
-                som = som + W[k, j] * x[j, w]
+            som = np.sum(W[k, k + 1 :] * x[k + 1 :, w])
             x[k, w] = (b[k, w] - som) / W[k, k]
+
+    # Retorna a solução
     return x
 
 
@@ -80,9 +81,12 @@ def Solution(W, b):
 
 
 def Transformation(W, b):
-    # tsup = False
-    Wn = np.atleast_2d(W).shape[0]
-    Wm = np.atleast_2d(W).shape[1]
+    # Tamanho das matrizes
+    Wn = W.shape[0]
+    Wm = W.shape[1]
+    bm = b.shape[1]
+
+    # Aplica RotGivens nas matrizes W e b
     for k in range(0, Wm):
         for j in range(Wn - 1, k, -1):
             i = j - 1
@@ -90,53 +94,96 @@ def Transformation(W, b):
                 const = Constants(W, j, k, i)
                 s = const[0]
                 c = const[1]
-                W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                b = Rotgivens(b, Wn, Wm, i, j, c, s)
-    # tsup = Is_tsup(W, Wn, Wm)
-    # if tsup is False:
-    #     mat = Transformation(W, b)
-    #     W = mat[0]
-    #     b = mat[1]
+                W[i, 0:Wm], W[j, 0:Wm] = (
+                    c * W[i, 0:Wm] - s * W[j, 0:Wm],
+                    s * W[i, 0:Wm] + c * W[j, 0:Wm],
+                )
+                b[i, 0:bm], b[j, 0:bm] = (
+                    c * b[i, 0:bm] - s * b[j, 0:bm],
+                    s * b[i, 0:bm] + c * b[j, 0:bm],
+                )
     return W, b
 
 
 ###############################################################################
 
+c = False
+while c is False:
+    v = input("Escolha o exemplo da Tarefa 1 a ser utilizado (a, b, c ou d): ")
+    if v == "a":
+        W = np.empty((64, 64), dtype=float)
+        for i in range(0, 64):
+            for j in range(0, 64):
+                if i == j:
+                    W[i, j] = 2
+                elif abs(i - j) == 1:
+                    W[i, j] = 1
+                else:
+                    W[i, j] = 0
+        b = np.ones((64, 1), dtype=float)
+        c = True
+    elif v == "b":
+        W = np.empty((20, 17))
+        for i in range(0, 20):
+            for j in range(0, 17):
+                if abs(i - j) > 4:
+                    W[i, j] = 0
+                else:
+                    W[i, j] = 1 / (i + j + 1)
+        b = np.ones((20, 1), dtype=float)
+        c = True
+    elif v == "c":
+        W = np.empty((64, 64), dtype=float)
+        for i in range(0, 64):
+            for j in range(0, 64):
+                if i == j:
+                    W[i, j] = 2
+                elif abs(i - j) == 1:
+                    W[i, j] = 1
+                else:
+                    W[i, j] = 0
+        b = np.array([(1, i, 2 * i - 1) for i in range(1, 65)], dtype=float)
+        c = True
+    elif v == "d":
+        W = np.empty((20, 17))
+        for i in range(0, 20):
+            for j in range(0, 17):
+                if abs(i - j) > 4:
+                    W[i, j] = 0
+                else:
+                    W[i, j] = 1 / (i + j + 1)
+        b = np.array([(1, i, 2 * i - 1) for i in range(1, 21)], dtype=float)
+        c = True
+    else:
+        print("Opção inválida", end="\n\n")
+
+Wc = np.copy(W)
+
 # Cria a matriz, aleatoriamente ou não
 # W = np.random.rand(n, m)
-# W = np.empty((64, 64), dtype=float)
-# for i in range(0, 64):
-#     for j in range(0, 64):
-#         if i == j:
-#             W[i, j] = 2
-#         elif abs(i - j) == 1:
-#             W[i, j] = 1
-#         else:
-#             W[i, j] = 0
-# b = np.ones((64, 1), dtype=float)
-W = np.array([[1, 2], [2, 1], [1, 2]], dtype=float)
-b = np.array([[5, 4, 5], [4, 5, 4], [5, 4, 5]], dtype=float)
+# W = np.array([[1, 2], [2, 1], [1, 2]], dtype=float)
+# b = np.array([[5, 4, 5], [4, 5, 4], [5, 4, 5]], dtype=float)
 
 # Para simplificar, usamos valores da matriz de rotacao quaisquer para
 # teste mas garantimos que matriz seja ortogonal (para os testes de
 # performace isso nao importa)
 
 print("A matriz W original:")
-print(W, end="\n")
+print(W, end="\n\n")
 print("A matriz b original:")
-print(b, end="\n")
+print(b, end="\n\n")
 
 transf = Transformation(W, b)
 W = transf[0]
 b = transf[1]
 
-print("A matriz após a rotação:")
-print(W, end="\n")
-print("O vetor b após a rotação:")
-print(b, end="\n")
-
+print("A matriz b rotação:")
+print(b, end="\n\n")
 
 # Soluciona a equação Rx = b'e printa a matrix x resultante
 x = Solution(W, b)
 print("A matriz x:")
-print(x)
+print(x, end="\n\n")
+
+print("A matriz W*x:")
+print(np.matmul(Wc, x))
