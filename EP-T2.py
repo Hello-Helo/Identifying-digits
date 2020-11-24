@@ -118,19 +118,22 @@ def Erro(A, W, H):
 
 A = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]])
 
+print("A matriz A:")
+print(A, end="\n\n")
+
 # An = Wn
 # Am = Hm
 # Wm = An - Arbitrario
 
 p = 2
 
-# Tamanho e definição das matrizes (W será o parâmetro)
+# Tamanho e definição das matrizes (W será aleatório)
 An = A.shape[0]
 Am = A.shape[1]
 W = np.random.random(size=(An, p))
 H = np.zeros((p, Am), dtype=float)
 
-# Guarda uma cópia dos dados de cada um dos dígitos
+# Guarda uma cópia da matriz original
 Aprime = np.copy(A)
 
 # Definições arbitrárias do erro e contagem de iterações para o loop while
@@ -138,38 +141,47 @@ E = 10000
 Edif = 10000
 iterations = 0
 
-# Inicialicação do while para definição do parâmetro
+# Inicialicação do while para definição de W
 while Edif > 0.000001 and iterations < 100:
 
-    # Normalização do pré-parâmetro
+    # Normalização do W
     W = Normalize(W)
 
-    # Criação de uma matriz auxiliar positiva para refinamento do parâmetro
+    # Refinando H
     H = Solve(W, A)
     H = np.clip(H, 0, None)
 
-    # Volta dos dados origináis dos digitos
+    # Volta da matriz original
     A = np.copy(Aprime)
 
-    # Transposição para o refinamento do parâmetro
+    # Transposição para o refinamento de W
     At = np.transpose(A).copy()
     Ht = np.transpose(H).copy()
 
-    # Definindo um parâmetro mais refinado
+    # Definindo um W mais refinado
     Wt = Solve(Ht, At)
     W = np.transpose(Wt).copy()
     W = np.clip(W, 0, None)
 
-    # Volta dos dados origináis dos digitos
+    # Volta dos dados origináis
     A = np.copy(Aprime)
 
-    # Calculo da diferença do erro entre os dois ultimos parâmetros
+    # Calculo da diferença do erro entre os dois ultimos Ws
     Eprev = E
     E = Erro(A, W, H)
     Edif = abs(E - Eprev)
 
-    # Mantem conhecimento do número refinamento do parâmetro
+    # Mantem conhecimento do número refinamento de W
     iterations += 1
 
-print(iterations)
-print(W)
+print("A matriz W encontrada:")
+print(W, end="\n\n")
+
+print("A matriz H encontrada:")
+print(H, end="\n\n")
+
+print("A matriz A a partir de WH:")
+print(np.matmul(W, H), end="\n\n")
+
+print("O erro em relação a A original")
+print(E, end="\n\n")
