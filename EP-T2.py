@@ -19,27 +19,6 @@ import numpy as np
 ###############################################################################
 
 
-def Rotgivens(W, n, m, i, j, c, s):
-    W[i, 0:m], W[j, 0:m] = c * W[i, 0:m] - s * W[j, 0:m], s * W[i, 0:m] + c * W[j, 0:m]
-    return W
-
-
-###############################################################################
-
-
-def Is_tsup(W, Wn, Wm):
-    is_valid = True
-    for collum in range(0, Wm):
-        for line in range(collum + 1, Wn):
-            if W[line][collum] != 0:
-                is_valid = False
-                return is_valid
-    return is_valid
-
-
-###############################################################################
-
-
 def Constants(W, j, k, i):
     if abs(W[i, k]) > abs(W[j, k]):
         t = -W[j, k] / W[i, k]
@@ -55,12 +34,15 @@ def Constants(W, j, k, i):
 ###############################################################################
 
 
-def Solution(W, b):
+# Resolve um sistema de equações qualquer com RotGivens
+def Solve(W, b):
 
+    # Tamanho das matrizes
     Wn = W.shape[0]
     Wm = W.shape[1]
-    bn = b.shape[0]
     bm = b.shape[1]
+
+    # Aplica RotGivens nas matrizes W e b
     for k in range(0, Wm):
         for j in range(Wn - 1, k, -1):
             i = j - 1
@@ -68,107 +50,126 @@ def Solution(W, b):
                 const = Constants(W, j, k, i)
                 s = const[0]
                 c = const[1]
-                W = Rotgivens(W, Wn, Wm, i, j, c, s)
-                b = Rotgivens(b, bn, bm, i, j, c, s)
+                W[i, 0:Wm], W[j, 0:Wm] = (
+                    c * W[i, 0:Wm] - s * W[j, 0:Wm],
+                    s * W[i, 0:Wm] + c * W[j, 0:Wm],
+                )
+                b[i, 0:bm], b[j, 0:bm] = (
+                    c * b[i, 0:bm] - s * b[j, 0:bm],
+                    s * b[i, 0:bm] + c * b[j, 0:bm],
+                )
 
     # Tamanho das matrizes
     Wm = W.shape[1]
     bm = b.shape[1]
-    # Solução
+
+    # Acha a solução
     x = np.zeros((Wm, bm), dtype=float)
     for w in range(0, bm):
         for k in range(Wm - 1, -1, -1):
-            som = 0
-            for j in range(k + 1, Wm):
-                som = som + W[k, j] * x[j, w]
+            som = np.sum(W[k, k + 1 :] * x[k + 1 :, w])
             x[k, w] = (b[k, w] - som) / W[k, k]
+
+    # Retorna a solução
     return x
 
 
 ###############################################################################
 
 
+# Aplica a normalização para cada coluna individualmente
 def Normalize(W):
-    Wn = np.atleast_2d(W).shape[0]
-    Wm = np.atleast_2d(W).shape[1]
+
+    # Tamanho das matrizes
+    Wn = W.shape[0]
+    Wm = W.shape[1]
+
+    # Cada coluna tem seus valores divididos pelo quadrado da soma de todos os
+    # termos
     for j in range(0, Wm):
         s = math.sqrt((np.sum(W[0:Wn, j] ** 2)))
         W[0:Wn, j] = W[0:Wn, j] / s
+
+    # Retorna a matriz normalizada
     return W
 
 
 ###############################################################################
 
 
-def Make_positive(W):
-    Wn = np.atleast_2d(W).shape[0]
-    Wm = np.atleast_2d(W).shape[1]
-    for i in range(0, Wn):
-        for j in range(0, Wm):
-            W[i, j] = max(0, W[i, j])
-    return W
-
-
-###############################################################################
-
-
+# Calcula o erro quadrado entre 3 matrizes
 def Erro(A, W, H):
+
+    # Inicio do cálculo
     erro = 0
-    WH = np.dot(W, H)
-    An = np.atleast_2d(A).shape[0]
-    Am = np.atleast_2d(A).shape[1]
-    for i in range(0, An):
-        for j in range(0, Am):
-            erro = erro + (A[i, j] - WH[i, j]) ** 2
+    WH = np.matmul(W, H)
+
+    # Tamanho da matriz
+    Am = A.shape[1]
+
+    # Soma o quadrdo de todos os termos da diferença
+    for j in range(0, Am):
+        erro = erro + np.sum((A[:, j] - WH[:, j]) ** 2)
     return erro
+
 
 ###############################################################################
 
 
 A = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]])
-An = np.atleast_2d(A).shape[0]
-Am = np.atleast_2d(A).shape[1]
 
 # An = Wn
 # Am = Hm
 # Wm = An - Arbitrario
 
-Arb = 2
+p = 2
 
-W = np.random.random(size=(An, Arb))
-H = np.empty((Arb, Am), dtype=float)
+# Tamanho e definição das matrizes (W será o parâmetro)
+An = A.shape[0]
+Am = A.shape[1]
+W = np.random.random(size=(An, p))
+H = np.zeros((p, Am), dtype=float)
 
-print("A matriz A original:")
-print(A, end="\n")
-
+# Guarda uma cópia dos dados de cada um dos dígitos
 Aprime = np.copy(A)
 
-E = 10
+# Definições arbitrárias do erro e contagem de iterações para o loop while
+E = 10000
+Edif = 10000
 iterations = 0
 
-while E > 0.000001 and iterations < 20:
-    print("ITERATIONS ", end ="\n\n")
-    print(W)
+# Inicialicação do while para definição do parâmetro
+while Edif > 0.000001 and iterations < 100:
+
+    # Normalização do pré-parâmetro
     W = Normalize(W)
- 
-    H = Solution(W, A)
-    print(np.dot(W,H))
-    
+
+    # Criação de uma matriz auxiliar positiva para refinamento do parâmetro
+    H = Solve(W, A)
+    H = np.clip(H, 0, None)
+
+    # Volta dos dados origináis dos digitos
     A = np.copy(Aprime)
 
-    H = Make_positive(H)
+    # Transposição para o refinamento do parâmetro
+    At = np.transpose(A).copy()
+    Ht = np.transpose(H).copy()
 
-    At = np.transpose(np.copy(A))
-    Ht = np.transpose(np.copy(H))
+    # Definindo um parâmetro mais refinado
+    Wt = Solve(Ht, At)
+    W = np.transpose(Wt).copy()
+    W = np.clip(W, 0, None)
 
-    Wt = Solution(Ht, At)
-
+    # Volta dos dados origináis dos digitos
     A = np.copy(Aprime)
 
-    W = np.transpose(Wt)
-    W = Make_positive(W)
+    # Calculo da diferença do erro entre os dois ultimos parâmetros
+    Eprev = E
+    E = Erro(A, W, H)
+    Edif = abs(E - Eprev)
 
-    E = E - Erro(A, W, H)
-    
+    # Mantem conhecimento do número refinamento do parâmetro
     iterations += 1
-    print(iterations)
+
+print(iterations)
+print(W)
