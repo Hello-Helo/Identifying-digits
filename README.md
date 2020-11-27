@@ -27,4 +27,5 @@ O relatorio final pode ser vizualizado de duas formas diferentes, `RelatórioEP.
 ## Créditos
 
 Heloisa de Lazari - 11093093
+
 Lucca Pagnan - 11259329
