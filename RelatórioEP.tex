@@ -44,7 +44,7 @@
 
 \section{Introdução}
 
-    Esse exercício programa (EP), escrito em \textit{Python 3.8.6}, tem como objetivo classificar dígitos a partir de imagens dos mesmos escritos a mão.
+    Esse exercício programa (EP) escrito em \textit{Python 3.8.6} teve como objetivo classificar dígitos a partir de imagens dos mesmos escritos a mão.
     Para isso, foi implementada uma técnica de \textit{Mechine Learning} com fatoração de matrizes.
 
     Além disso, foram utilizadas as bibliotecas \textit{NumPy} para operações básicas com matrizes e vetores, \textit{time} para saber o tempo utilizado para realização de determinados processos, \textit{pdb} para o debugger e \textit{cProfile} para uma análise mais completa do tempo de todos os processos para facilitar a otimização.
@@ -60,7 +60,7 @@
     Na primeira tarefa, foi necessário escrever um programa que inicialmente resolvia um sistema no estilo  $Wx = b$ com  $W$ e $b$ dados e o último sendo um vetor.
     Para isso, utilizamos o método \textbf{Rot-Givens}, que faz rotações nas matrizes a fim de transformar $W$ em triangular superior para uma resolução mais eficiente.
 
-    O algorítimo em si, tem origens no arquivo \textit{vector\_oper.py} disponibilizado pelo professor, e o metodo escolhido por nós, mostrado abaixo, era o mais eficiente em nossas máquinas.
+    O algorítimo em si, tem origens no arquivo \textit{vector\_oper.py} disponibilizado pelo professor, e o método escolhido por nós, mostrado abaixo, era o mais eficiente em nossas máquinas.
     \begin{lstlisting}[language=Python]
         def Rotgivens5(W, n, m, i, j, c, s):
             W[i, 0:m], W[j, 0:m] = (
@@ -69,7 +69,7 @@
             return W
     \end{lstlisting}
 
-    O resto do código foi escrito de maneira bem compartimentalizada. Duas fuções que aplicam o método de \textbf{Rot-Givens} em $W$ e $b$, uma terceira que calcula as constantes para a primeira e uma última responsável por encontrar $x$ a partir dos vetores transformados.
+    O resto do código foi escrito de maneira bem compartimentalizada, há funções que aplicam o método de \textbf{Rot-Givens} em $W$ e $b$, uma segunda que calcula as constantes para a primeira e outra responsável por encontrar $x$ a partir dos vetores transformados.
 
     Aplicando esses código para o exemplo \textbf{a}, encontramos $x$ rapidamente, aproximadamente 0,019s, e concluímos que esse é um sistema determinado, pois $Wx$ calculado com  $W$ original e $x$ encontrado é igual ao vetor $b$ original
     Já o exemplo \textbf{b}, realizado em menos de 0,015s, nunca resultava no vetor $b$ após a multiplicação $Wx$, nos levando a concluir que esse era um sistema sobredeterminado.
@@ -86,7 +86,7 @@
     Nessa segunda tarefa o objetivo era fatorar uma matriz $A$ em $W$ e  $H$ positivos, para isso, foi utilizado o algorítimo dos mínimos quadrados.
     A solução de equações a partir de \textbf{Rot-Givens} foi utilizado para uma melhor otimização.
 
-    O método foi escrito se baseando no pseudo-código disponibilizado, onde é necessario a resolução de 2 sistemas, um para a determinação de $H$ e outro para a determinação de $W$.
+    O método foi escrito se baseando no pseudo código disponibilizado, onde é necessário a resolução de 2 sistemas, um para a determinação de $H$ e outro para a determinação de $W$.
     Ele se repetia até que o quadrado da diferença entre o erro da fatoração ($WH$) atual e anterior fosse mínimo se comparado a $A$ original, e isso geralmente ocorria para erros absolutos pequenos.
 
     Não houve muitos problemas nessa aplicação e os testes com as matrizes disponibilizadas ocorriam em menos de 0.01s.
@@ -94,8 +94,8 @@
 
 \section{Programa Principal}
 
-    Nesse programa, implementamos calculos de matrizes para a criação de uma AI a partir de Machine Learning que é capaz de identificar dígitos escritos a mão a partir de uma imagem quadrada de 28 pixels.
-    Para isso, é preciso que um banco de dados com vários exemplos dos dígitos manuscritos já categorizados seja utilizado pelo programa para a criação de uma matriz para cada digito que serão a passe de um espaço vetorial.
+    Nesse programa, implementamos cálculos de matrizes para a criação de uma AI a partir de Machine Learning que é capaz de identificar dígitos escritos a mão a partir de uma imagem quadrada de 28 pixeis.
+    Para isso, é preciso que um banco de dados com vários exemplos dos dignos manuscritos já categorizados sejam utilizados pelo programa para a criação de uma matriz para cada digito que serão a passe de um espaço vetorial.
 
     Ao compararmos uma matriz criada a partir da imagem analisada com cada uma das bases, podemos ver com qual ela mais se assemelha para identificarmos o dígito nela escrito.
 
@@ -104,117 +104,123 @@
     Todos os dados de um dígito para os treinamentos são colocados em uma matriz $T$ onde cada coluna representa uma imagem com $28^2 = 784$ colunas.
     Essas matrizes passam pelo processamento da imagem, normalizando seus valores.
 
-    A partir disso, podemos calcular a matriz de classificação a partir do algorítimo criado na segunda tarefa, nele a matriz $T$ é fatorada em $H$, que e descartada, e $W$ funcionará como uma base do espaço vetorial de tamanho 784 por $p$ que define o seu nivel de precisão, classificando os dígitos manuscritos.
+    A partir disso, podemos calcular a matriz de classificação a partir do algorítimo criado na segunda tarefa, nele a matriz $T$ é fatorada em $H$, que e descartada, e $W$ funcionará como uma base do espaço vetorial de tamanho 784 por $p$ que define o seu nível de precisão, classificando os dígitos manuscritos.
 
-    Em seguida, a matriz $A$ guardará os 10000 digitos que serão classificado e encontraremos $x_{i}$ nas equações $A = W_{i} x_{i}$ onde $i$ é o dígito a der analizado.
+    Em seguida, a matriz $A$ guardará os 10000 dígitos que serão classificado e encontraremos $x_{i}$ nas equações $A = W_{i} x_{i}$ onde $i$ é o dígito a der analisado.
     Depois, se compararmos a norma da coluna $k$ entre todas as matrizes $x_{i}$, podemos concluir o dígito manuscrito daquela coluna provavelmente é $i$ onde a norma de $k$ da matriz $W_{i}$ é menor.
 
 \subsection{Otimização}
 
-    Para otimizar esse código, alguns passos foram tomados, e entre elas, a condensação das funções.
-    Se comparado com funções similares nos programas auxiliares vemos que elas são mais segmentadas para uma maior fexibilidade do código, eentretando, no programa \textit{IdentificadorDeDígitos.py} isso era prejudicial, pois o tempo perdido chamando funções auxiliares se somavam muito rapidamente.
+    Para otimizar esse código, alguns passos foram tomados, e entre elas, ouve a condensação das funções.
+    Se comparado com funções similares nos programas auxiliares vemos que elas são mais segmentadas para uma maior flexibilidade do código, entretanto, no programa \textit{IdentificadorDeDígitos.py} isso era prejudicial, pois o tempo perdido chamando funções auxiliares se somavam muito rapidamente.
 
 \subsection{Testes}
 
     Foram utilizados os parâmetros precisão de W ($p$) e número de imagens para treino ($n$) para a realização dos testes.
     A variável $p$ poderia ter os valores 5, 10 e 15, e $n$ poderia ser 100, 1000 e 4000 e os resultados podem ser vistos na tabela abaixo.
 
-\begin{table}[htpb]
-    \centering
-    \begin{tabular}{| c | | c | c | c |}
-    \hline
-    & 100 & 1000 & 4000  \\
-    \hline
-        5 & 141s (2.3min) & 471s (7.8min) & 690s (11.5min) \\
-    \hline
-        10 & 304s (5min) & 679s (11.3min) & 1955s (32.5min) \\
-    \hline
-        15 & 427s (7.1min) & 939s (15.6min) & 2793s (46.5min) \\
-    \hline
-    \end{tabular}
-    \caption{Tempo na realização do programa \textit{IdentificadorDeDígitos.py}}
-    \label{table:tempo}
-\end{table}
+    \begin{table}[htpb]
+        \centering
+        \begin{tabular}{| c | | c | c | c |}
+        \hline
+        & 100 & 1000 & 4000  \\
+        \hline
+            5 & 141s (2.3min) & 471s (7.8min) & 690s (11.5min) \\
+        \hline
+            10 & 304s (5min) & 679s (11.3min) & 1955s (32.5min) \\
+        \hline
+            15 & 427s (7.1min) & 939s (15.6min) & 2793s (46.5min) \\
+        \hline
+        \end{tabular}
+        \caption{Tempo na realização do programa \textit{IdentificadorDeDígitos.py}}
+        \label{table:tempo}
+    \end{table}
 
-\begin{table}[htpb]
-    \centering
-    \begin{tabular}{| c | c | c | c |}
-    \hline
-    Dígito & 100 & 1000 & 4000 \\
-    \hline
-    \hline
-    0 & 96.63265306122449\% & 97.55102040816327\%& 98.87755102040816\%\\
-    1 & 99.47136563876651\% & 99.20704845814979\%& 99.38325991189427\%\\
-    2 & 84.59302325581395\% & 87.79069767441861\%& 91.76356589147287\%\\
-    3 & 85.64356435643565\% & 91.38613861386139\%& 91.2871287128713\% \\
-    4 & 83.70672097759673\% & 86.65987780040734\%& 92.15885947046843\%\\
-    5 & 83.85650224215246\% & 88.00448430493275\%& 88.00448430493275\%\\
-    6 & 94.1544885177453\%  & 96.24217118997912\%& 96.97286012526096\%\\
-    7 & 88.13229571984435\% & 90.1750972762646\% & 93.28793774319067\%\\
-    8 & 78.74743326488706\% & 86.13963039014374\%& 90.96509240246407\%\\
-    9 & 86.32309217046581\% & 87.11595639246778\%& 92.07135777998018\%\\
-    \hline
-    \hline
-    Total & 88.5\% & 91.4\% & 91.67\% \\
-    \hline
-    \end{tabular}
-    \caption{Porcentagem de acerto para $p = 5$}
-    \label{table:p5}
-\end{table}
+    \begin{table}[htpb]
+        \centering
+        \begin{tabular}{| c | c | c | c |}
+        \hline
+        Dígito & 100 & 1000 & 4000 \\
+        \hline
+        \hline
+        0 & 96.63265306122449\% & 97.55102040816327\%& 98.87755102040816\%\\
+        1 & 99.47136563876651\% & 99.20704845814979\%& 99.38325991189427\%\\
+        2 & 84.59302325581395\% & 87.79069767441861\%& 91.76356589147287\%\\
+        3 & 85.64356435643565\% & 91.38613861386139\%& 91.2871287128713\% \\
+        4 & 83.70672097759673\% & 86.65987780040734\%& 92.15885947046843\%\\
+        5 & 83.85650224215246\% & 88.00448430493275\%& 88.00448430493275\%\\
+        6 & 94.1544885177453\%  & 96.24217118997912\%& 96.97286012526096\%\\
+        7 & 88.13229571984435\% & 90.1750972762646\% & 93.28793774319067\%\\
+        8 & 78.74743326488706\% & 86.13963039014374\%& 90.96509240246407\%\\
+        9 & 86.32309217046581\% & 87.11595639246778\%& 92.07135777998018\%\\
+        \hline
+        \hline
+        Total & 88.5\% & 91.4\% & 91.67\% \\
+        \hline
+        \end{tabular}
+        \caption{Porcentagem de acerto para $p = 5$}
+        \label{table:p5}
+    \end{table}
 
-\begin{table}[htpb]
-    \centering
-    \begin{tabular}{| c | c | c | c |}
-    \hline
-    Dígito & 100 & 1000 & 4000 \\
-    \hline
-    \hline
-    0 & 97.6530612244898\%  & 98.57142857142858\%& 98.57142857142858\%\\
-    1 & 99.38325991189427\% & 99.64757709251101\%& 99.64757709251101\%\\
-    2 & 90.01937984496125\% & 90.50387596899225\%& 90.50387596899225\%\\
-    3 & 86.03960396039604\% & 91.68316831683168\%& 91.68316831683168\%\\
-    4 & 87.57637474541752\% & 92.4643584521385\% & 92.4643584521385\% \\
-    5 & 86.88340807174887\% & 88.2286995515695\% & 88.2286995515695\% \\
-    6 & 95.4070981210856\%  & 96.4509394572025\% & 96.4509394572025\% \\
-    7 & 89.6887159533074\%  & 91.73151750972762\%& 91.73151750972762\%\\
-    8 & 79.36344969199179\% & 87.47433264887063\%& 87.47433264887063\%\\
-    9 & 88.10703666997026\% & 91.2784935579782\% & 91.2784935579782\% \\
-    \hline
-    \hline
-    Total & 90.16\% & 92.92\% & 93.55\% \\
-    \hline
-    \end{tabular}
-    \caption{Porcentagem de acerto com p = 10}
-    \label{table:p10}
-\end{table}
+    \begin{table}[htpb]
+        \centering
+        \begin{tabular}{| c | c | c | c |}
+        \hline
+        Dígito & 100 & 1000 & 4000 \\
+        \hline
+        \hline
+        0 & 97.6530612244898\%  & 98.57142857142858\%& 98.57142857142858\%\\
+        1 & 99.38325991189427\% & 99.64757709251101\%& 99.55947136563876\%\\
+        2 & 90.01937984496125\% & 90.50387596899225\%& 92.44186046511628\%\\
+        3 & 86.03960396039604\% & 91.68316831683168\%& 93.06930693069307\%\\
+        4 & 87.57637474541752\% & 92.4643584521385\% & 93.78818737270875\%\\
+        5 & 86.88340807174887\% & 88.2286995515695\% & 90.02242152466367\%\\
+        6 & 95.4070981210856\%  & 96.4509394572025\% & 96.5553235908142\% \\
+        7 & 89.6887159533074\%  & 91.73151750972762\%& 92.50972762645915\%\\
+        8 & 79.36344969199179\% & 87.47433264887063\%& 86.24229979466119\%\\
+        9 & 88.10703666997026\% & 91.2784935579782\% & 91.67492566897918\%\\
+        \hline
+        \hline
+        Total & 90.16\% & 92.92\% & 93.55\% \\
+        \hline
+        \end{tabular}
+        \caption{Porcentagem de acerto com p = 10}
+        \label{table:p10}
+    \end{table}
 
-\begin{table}[htpb]
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-    \hline
-    Todos & 100 & 1000 & 4000 \\
-    \hline
-    \hline
-    0 & 97.24489795918367\% & 98.87755102040816\%& 98.67346938775509\%\\
-    1 & 99.47136563876651\% & 99.38325991189427\%& 99.38325991189427\%\\
-    2 & 88.85658914728683\% & 91.76356589147287\%& 93.02325581395348\%\\
-    3 & 85.44554455445544\% & 91.2871287128713\% & 92.97029702970298\%\\
-    4 & 88.59470468431772\% & 92.15885947046843\%& 93.58452138492872\%\\
-    5 & 84.19282511210763\% & 88.00448430493275\%& 89.68609865470853\%\\
-    6 & 95.61586638830897\% & 96.97286012526096\%& 96.86847599164928\%\\
-    7 & 93.19066147859922\% & 93.28793774319067\%& 91.14785992217898\%\\
-    8 & 80.39014373716633\% & 90.96509240246407\%& 89.01437371663245\%\\
-    9 & 88.800792864222\%   & 92.07135777998018\%& 91.87314172447968\%\\
-    \hline
-    \hline
-    Total & 90.36\% & 93.58\% & 93.72\% \\
-    \hline
-    \end{tabular}
-    \caption{Porcentagem de acerto para $p = 15$}
-    \label{table:}
-\end{table}
+    \begin{table}[htpb]
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+        \hline
+        Todos & 100 & 1000 & 4000 \\
+        \hline
+        \hline
+        0 & 97.24489795918367\% & 98.87755102040816\%& 98.67346938775509\%\\
+        1 & 99.47136563876651\% & 99.38325991189427\%& 99.38325991189427\%\\
+        2 & 88.85658914728683\% & 91.76356589147287\%& 93.02325581395348\%\\
+        3 & 85.44554455445544\% & 91.2871287128713\% & 92.97029702970298\%\\
+        4 & 88.59470468431772\% & 92.15885947046843\%& 93.58452138492872\%\\
+        5 & 84.19282511210763\% & 88.00448430493275\%& 89.68609865470853\%\\
+        6 & 95.61586638830897\% & 96.97286012526096\%& 96.86847599164928\%\\
+        7 & 93.19066147859922\% & 93.28793774319067\%& 91.14785992217898\%\\
+        8 & 80.39014373716633\% & 90.96509240246407\%& 89.01437371663245\%\\
+        9 & 88.800792864222\%   & 92.07135777998018\%& 91.87314172447968\%\\
+        \hline
+        \hline
+        Total & 90.36\% & 93.58\% & 93.72\% \\
+        \hline
+        \end{tabular}
+        \caption{Porcentagem de acerto para $p = 15$}
+        \label{table:}
+    \end{table}
 
-    A partir dos dados das tabelas, podemos tirar algumas conclusões, entre elas uma da mais importante é que apos certo número de dígitos de trinamento e de precisão do treinamento o aumento da taxa de sucesso é minimo se comparado com o tempo maior de execução.
+    A partir dos dados das tabelas, podemos tirar algumas conclusões, entre elas uma da mais importante é que apos certo número de dígitos de trinamento o aumento da taxa de sucesso é minimo se comparado com o tempo maior de execução.
+    Entretanto, se valor de precisão de tende a aumentar, a precisão dos resultados aumenta em um maior grau.
+
+\section{Conclusões}
+
+    A partir desse trabalho conseguimos desenvolver um conhecimento alto de \textit{Python} e das técnicas de \textit{Machine Learning}.
+    Também percebemos que, as vezes, para conseguir melhores resultados em tempos razoáveis em programas desse tipo, a quantidade de dados para o treinamento é ofuscada pela quantidade de detalhamento desses dados.
 
 % 100 - 5
 % Os resultados gerais:
