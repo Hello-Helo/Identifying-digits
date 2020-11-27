@@ -13,6 +13,7 @@
 
 
 import math
+import time
 
 import numpy as np
 
@@ -115,6 +116,7 @@ def Erro(A, W, H):
 
 ###############################################################################
 
+T = time.time()
 
 A = np.array([[3 / 10, 3 / 5, 0], [1 / 2, 0, 1], [4 / 10, 4 / 5, 0]])
 
@@ -185,3 +187,6 @@ print(np.matmul(W, H), end="\n\n")
 
 print("O erro em relação a A original")
 print(E, end="\n\n")
+
+t = time.time() - T
+print("Esse processo foi realizado em", t, "segundos")

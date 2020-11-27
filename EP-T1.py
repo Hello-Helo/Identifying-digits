@@ -12,6 +12,7 @@
 ###############################################################################
 
 import math
+import time
 
 import numpy as np
 
@@ -156,6 +157,9 @@ while c is False:
         c = True
     else:
         print("Opção inválida", end="\n\n")
+        o
+
+T = time.time()
 
 Wc = np.copy(W)
 
@@ -187,3 +191,6 @@ print(x, end="\n\n")
 
 print("A matriz W*x:")
 print(np.matmul(Wc, x))
+
+t = time.time() - T
+print("Esse processo foi realizado em", t, "segundos")

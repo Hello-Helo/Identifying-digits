@@ -6,8 +6,9 @@
 #
 #     Terceira tarefa do EP de Computação III
 #
-#
-#
+#     Nessa tarefa, o codigo recebe um arquivo com digitos específicos para o
+#     treinamento da AI e em seguida pratica essa conhecimento adiquirino num
+#     arquivo de teste, onde é possivel saber a precisão
 #
 ###############################################################################
 
@@ -332,7 +333,7 @@ print("Os resultados gerais:")
 
 # Calcula a porgentagem geral de acertos
 Percent = (total / n_test) * 100
-print("  Conseguimos", total, "dígitos indentificados corretamente")
+print("  Conseguimos", total, "dígitos identificados corretamente")
 print("  Isso é", Percent, "%")
 
 # Calcula a porcentagem de acerto por digito

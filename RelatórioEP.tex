@@ -1,0 +1,354 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[lmargin=3cm,tmargin=3cm,rmargin=2cm,bmargin=2cm]{geometry}
+\usepackage[onehalfspacing]{setspace}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[brazil]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage{indentfirst}
+\usepackage{listings}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\newcommand{\N}{\mathbb N}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+
+\usepackage{import}
+\usepackage{pdfpages}
+\usepackage{transparent}
+\usepackage{xcolor}
+
+\newcommand{\incfig}[2][1]{%
+    \def\svgwidth{#1\columnwidth}
+    \import{./figures/}{#2.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\usepackage{xifthen}
+\pdfminorversion=7
+
+\title{Relatório sobre Fatoração de Matrizes para Sistemas de Classificação de \textit{Machine Learning}}
+\author{Heloisa de Lazari Bento \\ Nusp: 11093093 \and Lucca Alipio Pagnan \\ Nusp: 11259329}
+\date{Novembro de 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+
+    Esse exercício programa (EP) escrito em \textit{Python 3.8.6} teve como objetivo classificar dígitos a partir de imagens dos mesmos escritos a mão.
+    Para isso, foi implementada uma técnica de \textit{Mechine Learning} com fatoração de matrizes.
+
+    Além disso, foram utilizadas as bibliotecas \textit{NumPy} para operações básicas com matrizes e vetores, \textit{time} para saber o tempo utilizado para realização de determinados processos, \textit{pdb} para o debugger e \textit{cProfile} para uma análise mais completa do tempo de todos os processos para facilitar a otimização.
+    Houve também o uso de \textit{linters} e \textit{fixers} para uma melhor formatação do código.
+
+    Foram escritos 3 programas no total, \textit{EP-T1.py}, \textit{EP-T2.py} e \textit{IdentificadorDeDígitos.py}, que equivalem a primeira, segunda e a tarefa principal.
+    Todas os tempos e testes descritos foram feitos em um laptop com processador INTEL i5 de quarta geração, resultados podem variar.
+
+\section{Programas Auxiliares}
+
+\subsection{Primeira Tarefa}
+
+    Na primeira tarefa, foi necessário escrever um programa que inicialmente resolvia um sistema no estilo  $Wx = b$ com  $W$ e $b$ dados e o último sendo um vetor.
+    Para isso, utilizamos o método \textbf{Rot-Givens}, que faz rotações nas matrizes a fim de transformar $W$ em triangular superior para uma resolução mais eficiente.
+
+    O algorítimo em si, tem origens no arquivo \textit{vector\_oper.py} disponibilizado pelo professor, e o metodo escolhido por nós, mostrado abaixo, era o mais eficiente em nossas máquinas.
+    \begin{lstlisting}[language=Python]
+        def Rotgivens5(W, n, m, i, j, c, s):
+            W[i, 0:m], W[j, 0:m] = (
+            c * W[i, 0:m] - s * W[j, 0:m],
+            s * W[i, 0:m] + c * W[j, 0:m])
+            return W
+    \end{lstlisting}
+
+    O resto do código foi escrito de maneira bem compartimentalizada, há funções que aplicam o método de \textbf{Rot-Givens} em $W$ e $b$, uma segunda que calcula as constantes para a primeira e outra responsável por encontrar $x$ a partir dos vetores transformados.
+
+    Aplicando esses código para o exemplo \textbf{a}, encontramos $x$ rapidamente, aproximadamente 0,019s, e concluímos que esse é um sistema determinado, pois $Wx$ calculado com  $W$ original e $x$ encontrado é igual ao vetor $b$ original
+    Já o exemplo \textbf{b}, realizado em menos de 0,015s, nunca resultava no vetor $b$ após a multiplicação $Wx$, nos levando a concluir que esse era um sistema sobredeterminado.
+
+    Após esses exemplos e segundo a lógica do exercício, concluímos que uma alteração no nosso código original podia ser feito para que ele suportasse não só o $b$ em forma de vetor mas também na de uma matriz com $n$ colunas, ou seja, $n$ sistemas simultâneos, assim os exemplos \textbf{c} e \textbf{d} poderiam ser testados.
+
+    Os resultados para ambos foi como o esperado, com tempos menores que 0.018s.
+    Concluímos também que todos os sistemas de  \textbf{c} são determinados, enquanto os de  \textbf{d} não.
+
+    Assim, poderíamos utilizar o código para a construção da segunda tarefa auxiliar.
+
+\subsection{Segunda Tarefa}
+
+    Nessa segunda tarefa o objetivo era fatorar uma matriz $A$ em $W$ e  $H$ positivos, para isso, foi utilizado o lgorítimo dos mínimos quadrados.
+    A solução de equações a partir de \textbf{Rot-Givens} foi utilizado para uma melhor otimização.
+
+    O método foi escrito se baseando no pseudo-código disponibilizado, onde é necessario a resolução de 2 sistemas, um para a determinação de $H$ e outro para a determinação de $W$.
+    Ele se repetia até que o quadrado da diferença entre o erro da fatoração ($WH$) atual e anterior fosse mínimo se comparado a $A$ original, e isso geralmente ocorria para erros absolutos pequenos.
+
+    Não houve muitos problemas nessa aplicação e os testes com as matrizes disponibilizadas ocorriam em menos de 0.01s.
+    Acretitamos que esse tempo era bem menor do que os vistos na primeira tarefa, mesmo ele sendo utilizado nesse código, pois a matriz do exemplo é significantemente menor.
+
+\section{Programa Principal}
+
+    Nesse programa, implementamos calculos de matrizes para a criação de uma AI a partir de Machine Learning que é capaz de identificar dígitos escritos a mão a partir de uma imagem quadrada de 28 pixels.
+    Para isso, é preciso que um banco de dados com vários exemplos dos dignos manuscritos já categorizados sejam utilizados pelo programa para a criação de uma matriz para cada digito que serão a passe de um espaço vetorial.
+
+    Ao compararmos uma matriz criada a partir da imagem analisada com cada uma das bases, podemos ver com qual ela mais se assemelha para identificarmos o dígito nela escrito.
+
+\subsection{Os passos}
+
+    Todos os dados de um dígito para os treinamentos são colocados em uma matriz $T$ onde cada coluna representa uma imagem com $28^2 = 784$ colunas.
+    Essas matrizes passam pelo processamento da imagem, normalizando seus valores.
+
+    A partir disso, podemos calcular a matriz de classificação a partir do algorítimo criado na segunda tarefa, nele a matriz $T$ é fatorada em $H$, que e descartada, e $W$ funcionará como uma base do espaço vetorial de tamanho 784 por $p$ que define o seu nivel de precisão, classificando os dígitos manuscritos.
+
+    Em seguida, a matriz $A$ guardará os 10000 digitos que serão classificado e encontraremos $x_{i}$ nas equações $A = W_{i} x_{i}$ onde $i$ é o dígito a der analizado.
+    Depois, se compararmos a norma da coluna $k$ entre todas as matrizes $x_{i}$, podemos concluir o dígito manuscrito daquela coluna provavelmente é $i$ onde a norma de $k$ da matriz $W_{i}$ é menor.
+
+\subsection{Otimização}
+
+    Para otimizar esse código, alguns passos foram tomados, e entre elas, ouve a condensação das funções.
+    Se comparado com funções similares nos programas auxiliares vemos que elas são mais segmentadas para uma maior fexibilidade do código, eentretando, no programa \textit{IdentificadorDeDígitos.py} isso era prejudicial, pois o tempo perdido chamando funções auxiliares se somavam muito rapidamente.
+
+\subsection{Testes}
+
+    Foram utilizados os parâmetros precisão de W ($p$) e número de imagens para treino ($n$) para a realização dos testes.
+    A variável $p$ poderia ter os valores 5, 10 e 15, e $n$ poderia ser 100, 1000 e 4000 e os resultados podem ser vistos na tabela abaixo.
+
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{| c | | c | c | c |}
+    \hline
+    & 100 & 1000 & 4000  \\
+    \hline
+    5 & 141s, 88.3\% & 471s, 91.4\% & 690s, 91.67\% \\
+    \hline
+    10 & 304s, 90.16\% & 679s, 92.92\%& 1955s, 93.55\% \\
+    \hline
+    15 & 427s, 90.36\% & 939s, 93.58\% & 2793s, 93.72\% \\
+    \hline
+    \end{tabular}
+    \caption{Tempo na realização do programa \textit{IdentificadorDeDígitos.py}}
+    \label{table:tempo}
+\end{table}
+
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{| c | c | c | c |}
+    \hline
+    & 100 & 1000 & 4000 \\
+    \hline
+    0 & 96.63265306122449\% & 97.55102040816327\%& 98.87755102040816\%\\
+    1 & 99.47136563876651\% & 99.20704845814979\%& 99.38325991189427\%\\
+    2 & 84.59302325581395\% & 87.79069767441861\%& 91.76356589147287\%\\
+    3 & 85.64356435643565\% & 91.38613861386139\%& 91.2871287128713\% \\
+    4 & 83.70672097759673\% & 86.65987780040734\%& 92.15885947046843\%\\
+    5 & 83.85650224215246\% & 88.00448430493275\%& 88.00448430493275\%\\
+    6 & 94.1544885177453\%  & 96.24217118997912\%& 96.97286012526096\%\\
+    7 & 88.13229571984435\% & 90.1750972762646\% & 93.28793774319067\%\\
+    8 & 78.74743326488706\% & 86.13963039014374\%& 90.96509240246407\%\\
+    9 & 86.32309217046581\% & 87.11595639246778\%& 92.07135777998018\%\\
+    \hline
+    \end{tabular}
+    \caption{Porcentagem de acerto de cada digito para $p = 5$}
+    \label{table:p5}
+\end{table}
+
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{| c | c | c | c |}
+    \hline
+    & 100 & 1000 & 4000 \\
+    \hline
+    0 & 97.6530612244898\%  & 98.57142857142858\%& 98.57142857142858\%\\
+    1 & 99.38325991189427\% & 99.64757709251101\%& 99.64757709251101\%\\
+    2 & 90.01937984496125\% & 90.50387596899225\%& 90.50387596899225\%\\
+    3 & 86.03960396039604\% & 91.68316831683168\%& 91.68316831683168\%\\
+    4 & 87.57637474541752\% & 92.4643584521385\% & 92.4643584521385\% \\
+    5 & 86.88340807174887\% & 88.2286995515695\% & 88.2286995515695\% \\
+    6 & 95.4070981210856\%  & 96.4509394572025\% & 96.4509394572025\% \\
+    7 & 89.6887159533074\%  & 91.73151750972762\%& 91.73151750972762\%\\
+    8 & 79.36344969199179\% & 87.47433264887063\%& 87.47433264887063\%\\
+    9 & 88.10703666997026\% & 91.2784935579782\% & 91.2784935579782\% \\
+    \hline
+    \end{tabular}
+    \caption{Porcentagem de acerto de cada dígito com p = 10}
+    \label{table:p10}
+\end{table}
+
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    & 100 & 1000 & 4000 \\
+    \hline
+    0 & 97.24489795918367\% & 98.87755102040816\%& 98.67346938775509\%\\
+    1 & 99.47136563876651\% & 99.38325991189427\%& 99.38325991189427\%\\
+    2 & 88.85658914728683\% & 91.76356589147287\%& 93.02325581395348\%\\
+    3 & 85.44554455445544\% & 91.2871287128713\% & 92.97029702970298\%\\
+    4 & 88.59470468431772\% & 92.15885947046843\%& 93.58452138492872\%\\
+    5 & 84.19282511210763\% & 88.00448430493275\%& 89.68609865470853\%\\
+    6 & 95.61586638830897\% & 96.97286012526096\%& 96.86847599164928\%\\
+    7 & 93.19066147859922\% & 93.28793774319067\%& 91.14785992217898\%\\
+    8 & 80.39014373716633\% & 90.96509240246407\%& 89.01437371663245\%\\
+    9 & 88.800792864222\%   & 92.07135777998018\%& 91.87314172447968\%\\
+    \hline
+    \end{tabular}
+    \caption{Porcentagem de acerto de cada dígito para $p = 15$}
+    \label{table:}
+\end{table}
+
+\begin{center}
+\begin{tabular}{| c | c | c | c |}
+\end{tabular}
+\end{center}
+
+% 100 - 5
+% Os resultados gerais:
+%   Conseguimos 8830 dígitos indentificados corretamente
+%   Isso é 88.3 %
+% Resultados por dígito:
+%    0 :  96.63265306122449%
+%    1 :  99.47136563876651%
+%    2 :  84.59302325581395%
+%    3 :  85.64356435643565%
+%    4 :  83.70672097759673%
+%    5 :  83.85650224215246%
+%    6 :  94.1544885177453%
+%    7 :  88.13229571984435%
+%    8 :  78.74743326488706%
+%    9 :  86.32309217046581%
+
+% 100 - 10
+% Os resultados gerais:
+%   Conseguimos 9016 dígitos indentificados corretamente
+%   Isso é 90.16 %
+% Resultados por dígito:
+%    0 :  97.6530612244898%
+%    1 :  99.38325991189427%
+%    2 :  90.01937984496125%
+%    3 :  86.03960396039604%
+%    4 :  87.57637474541752%
+%    5 :  86.88340807174887%
+%    6 :  95.4070981210856%
+%    7 :  89.6887159533074%
+%    8 :  79.36344969199179%
+%    9 :  88.10703666997026%
+
+% 100 - 15
+% Os resultados gerais:
+%   Conseguimos 9036 dígitos indentificados corretamente
+%   Isso é 90.36 %
+% Resultados por dígito:
+%    0 :  97.24489795918367%
+%    1 :  99.47136563876651%
+%    2 :  88.85658914728683%
+%    3 :  85.44554455445544%
+%    4 :  88.59470468431772%
+%    5 :  84.19282511210763%
+%    6 :  95.61586638830897%
+%    7 :  93.19066147859922%
+%    8 :  80.39014373716633%
+%    9 :  88.800792864222%
+
+% 1000 - 5
+% Os resultados gerais:
+%   Conseguimos 9114 dígitos indentificados corretamente
+%   Isso é 91.14 %
+% Resultados por dígito:
+%    0 :  97.55102040816327%
+%    1 :  99.20704845814979%
+%    2 :  87.79069767441861%
+%    3 :  91.38613861386139%
+%    4 :  86.65987780040734%
+%    5 :  88.00448430493275%
+%    6 :  96.24217118997912%
+%    7 :  90.1750972762646%
+%    8 :  86.13963039014374%
+%    9 :  87.11595639246778%
+
+% 1000 - 10
+% Os resultados gerais:
+%   Conseguimos 9292 dígitos identificados corretamente
+%   Isso é 92.92 %
+% Resultados por dígito:
+%    0 :  98.57142857142858%
+%    1 :  99.64757709251101%
+%    2 :  90.50387596899225%
+%    3 :  91.68316831683168%
+%    4 :  92.4643584521385%
+%    5 :  88.2286995515695%
+%    6 :  96.4509394572025%
+%    7 :  91.73151750972762%
+%    8 :  87.47433264887063%
+%    9 :  91.2784935579782%
+
+% 1000 - 15
+% Os resultados gerais:
+%   Conseguimos 9359 dígitos identificados corretamente
+%   Isso é 93.58999999999999 %
+% Resultados por dígito:
+%    0 :  98.87755102040816%
+%    1 :  99.38325991189427%
+%    2 :  91.76356589147287%
+%    3 :  91.2871287128713%
+%    4 :  92.15885947046843%
+%    5 :  88.00448430493275%
+%    6 :  96.97286012526096%
+%    7 :  93.28793774319067%
+%    8 :  90.96509240246407%
+%    9 :  92.07135777998018%
+
+% 4000 - 5
+% Os resultados gerais:
+%   Conseguimos 9168 dígitos identificados corretamente
+%   Isso é 91.67999999999999 %
+% Resultados por dígito:
+%    0 :  97.44897959183673%
+%    1 :  99.38325991189427%
+%    2 :  90.11627906976744%
+%    3 :  91.98019801980199%
+%    4 :  86.76171079429736%
+%    5 :  89.57399103139014%
+%    6 :  96.65970772442589%
+%    7 :  88.81322957198444%
+%    8 :  87.57700205338809%
+%    9 :  87.51238850346878%
+
+% 4000 - 10
+% Os resultados gerais:
+%   Conseguimos 9355 dígitos identificados corretamente
+%   Isso é 93.55 %
+% Resultados por dígito:
+%    0 :  98.57142857142858%
+%    1 :  99.55947136563876%
+%    2 :  92.44186046511628%
+%    3 :  93.06930693069307%
+%    4 :  93.78818737270875%
+%    5 :  90.02242152466367%
+%    6 :  96.5553235908142%
+%    7 :  92.50972762645915%
+%    8 :  86.24229979466119%
+%    9 :  91.67492566897918%
+
+% 4000 - 15
+% Os resultados gerais:
+%   Conseguimos 9372 dígitos identificados corretamente
+%   Isso é 93.72 %
+% Resultados por dígito:
+%    0 :  98.67346938775509%
+%    1 :  99.38325991189427%
+%    2 :  93.02325581395348%
+%    3 :  92.97029702970298%
+%    4 :  93.58452138492872%
+%    5 :  89.68609865470853%
+%    6 :  96.86847599164928%
+%    7 :  91.14785992217898%
+%    8 :  89.01437371663245%
+%    9 :  91.87314172447968%
+
+\end{document}
