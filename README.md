@@ -4,7 +4,7 @@
 
 ### O problema
 
-O enunciado pode ser encontrado no arquivo `Machine_Learning.pdf`, disponibiliado pelo Professor Saulo do Instituto de Matemática e Estatística da Universidade de São Paulo.
+O enunciado pode ser encontrado no arquivo `Machine_Learning.pdf`, disponibilizado pelo Professor Saulo do Instituto de Matemática e Estatística da Universidade de São Paulo.
 
 ### Imagens
 
@@ -23,3 +23,8 @@ Eles foram feitos para serem rodados individualmente, sem a necessidade se estar
 ### O relatório
 
 O relatorio final pode ser vizualizado de duas formas diferentes, `RelatórioEP.pdf` na forma PDF ou em `RelatórioEP.tex` na forma LaTeX.
+
+## Créditos
+
+Heloisa de Lazari - 11093093
+Lucca Pagnan - 11259329
