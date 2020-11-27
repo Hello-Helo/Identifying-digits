@@ -125,11 +125,11 @@
     \hline
     & 100 & 1000 & 4000  \\
     \hline
-    5 & 141s, 88.3\% & 471s, 91.4\% & 690s, 91.67\% \\
+        5 & 141s (2.3min) & 471s (7.8min) & 690s (11.5min) \\
     \hline
-    10 & 304s, 90.16\% & 679s, 92.92\%& 1955s, 93.55\% \\
+        10 & 304s (5min) & 679s (11.3min) & 1955s (32.5min) \\
     \hline
-    15 & 427s, 90.36\% & 939s, 93.58\% & 2793s, 93.72\% \\
+        15 & 427s (7.1min) & 939s (15.6min) & 2793s (46.5min) \\
     \hline
     \end{tabular}
     \caption{Tempo na realização do programa \textit{IdentificadorDeDígitos.py}}
@@ -140,7 +140,8 @@
     \centering
     \begin{tabular}{| c | c | c | c |}
     \hline
-    & 100 & 1000 & 4000 \\
+    Dígito & 100 & 1000 & 4000 \\
+    \hline
     \hline
     0 & 96.63265306122449\% & 97.55102040816327\%& 98.87755102040816\%\\
     1 & 99.47136563876651\% & 99.20704845814979\%& 99.38325991189427\%\\
@@ -153,8 +154,11 @@
     8 & 78.74743326488706\% & 86.13963039014374\%& 90.96509240246407\%\\
     9 & 86.32309217046581\% & 87.11595639246778\%& 92.07135777998018\%\\
     \hline
+    \hline
+    Total & 88.5\% & 91.4\% & 91.67\% \\
+    \hline
     \end{tabular}
-    \caption{Porcentagem de acerto de cada digito para $p = 5$}
+    \caption{Porcentagem de acerto para $p = 5$}
     \label{table:p5}
 \end{table}
 
@@ -162,7 +166,8 @@
     \centering
     \begin{tabular}{| c | c | c | c |}
     \hline
-    & 100 & 1000 & 4000 \\
+    Dígito & 100 & 1000 & 4000 \\
+    \hline
     \hline
     0 & 97.6530612244898\%  & 98.57142857142858\%& 98.57142857142858\%\\
     1 & 99.38325991189427\% & 99.64757709251101\%& 99.64757709251101\%\\
@@ -175,8 +180,11 @@
     8 & 79.36344969199179\% & 87.47433264887063\%& 87.47433264887063\%\\
     9 & 88.10703666997026\% & 91.2784935579782\% & 91.2784935579782\% \\
     \hline
+    \hline
+    Total & 90.16\% & 92.92\% & 93.55\% \\
+    \hline
     \end{tabular}
-    \caption{Porcentagem de acerto de cada dígito com p = 10}
+    \caption{Porcentagem de acerto com p = 10}
     \label{table:p10}
 \end{table}
 
@@ -184,7 +192,8 @@
     \centering
     \begin{tabular}{|c|c|c|c|}
     \hline
-    & 100 & 1000 & 4000 \\
+    Todos & 100 & 1000 & 4000 \\
+    \hline
     \hline
     0 & 97.24489795918367\% & 98.87755102040816\%& 98.67346938775509\%\\
     1 & 99.47136563876651\% & 99.38325991189427\%& 99.38325991189427\%\\
@@ -197,15 +206,15 @@
     8 & 80.39014373716633\% & 90.96509240246407\%& 89.01437371663245\%\\
     9 & 88.800792864222\%   & 92.07135777998018\%& 91.87314172447968\%\\
     \hline
+    \hline
+    Total & 90.36\% & 93.58\% & 93.72\% \\
+    \hline
     \end{tabular}
-    \caption{Porcentagem de acerto de cada dígito para $p = 15$}
+    \caption{Porcentagem de acerto para $p = 15$}
     \label{table:}
 \end{table}
 
-\begin{center}
-\begin{tabular}{| c | c | c | c |}
-\end{tabular}
-\end{center}
+    A partir dos dados das tabelas, podemos tirar algumas conclusões, entre elas uma da mais importante é que apos certo número de dígitos de trinamento e de precisão do treinamento o aumento da taxa de sucesso é minimo se comparado com o tempo maior de execução.
 
 % 100 - 5
 % Os resultados gerais:
