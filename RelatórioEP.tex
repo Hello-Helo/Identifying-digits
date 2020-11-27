@@ -44,7 +44,7 @@
 
 \section{Introdução}
 
-    Esse exercício programa (EP) escrito em \textit{Python 3.8.6} teve como objetivo classificar dígitos a partir de imagens dos mesmos escritos a mão.
+    Esse exercício programa (EP), escrito em \textit{Python 3.8.6}, tem como objetivo classificar dígitos a partir de imagens dos mesmos escritos a mão.
     Para isso, foi implementada uma técnica de \textit{Mechine Learning} com fatoração de matrizes.
 
     Além disso, foram utilizadas as bibliotecas \textit{NumPy} para operações básicas com matrizes e vetores, \textit{time} para saber o tempo utilizado para realização de determinados processos, \textit{pdb} para o debugger e \textit{cProfile} para uma análise mais completa do tempo de todos os processos para facilitar a otimização.
@@ -69,7 +69,7 @@
             return W
     \end{lstlisting}
 
-    O resto do código foi escrito de maneira bem compartimentalizada, há funções que aplicam o método de \textbf{Rot-Givens} em $W$ e $b$, uma segunda que calcula as constantes para a primeira e outra responsável por encontrar $x$ a partir dos vetores transformados.
+    O resto do código foi escrito de maneira bem compartimentalizada. Duas fuções que aplicam o método de \textbf{Rot-Givens} em $W$ e $b$, uma terceira que calcula as constantes para a primeira e uma última responsável por encontrar $x$ a partir dos vetores transformados.
 
     Aplicando esses código para o exemplo \textbf{a}, encontramos $x$ rapidamente, aproximadamente 0,019s, e concluímos que esse é um sistema determinado, pois $Wx$ calculado com  $W$ original e $x$ encontrado é igual ao vetor $b$ original
     Já o exemplo \textbf{b}, realizado em menos de 0,015s, nunca resultava no vetor $b$ após a multiplicação $Wx$, nos levando a concluir que esse era um sistema sobredeterminado.
@@ -83,19 +83,19 @@
 
 \subsection{Segunda Tarefa}
 
-    Nessa segunda tarefa o objetivo era fatorar uma matriz $A$ em $W$ e  $H$ positivos, para isso, foi utilizado o lgorítimo dos mínimos quadrados.
+    Nessa segunda tarefa o objetivo era fatorar uma matriz $A$ em $W$ e  $H$ positivos, para isso, foi utilizado o algorítimo dos mínimos quadrados.
     A solução de equações a partir de \textbf{Rot-Givens} foi utilizado para uma melhor otimização.
 
     O método foi escrito se baseando no pseudo-código disponibilizado, onde é necessario a resolução de 2 sistemas, um para a determinação de $H$ e outro para a determinação de $W$.
     Ele se repetia até que o quadrado da diferença entre o erro da fatoração ($WH$) atual e anterior fosse mínimo se comparado a $A$ original, e isso geralmente ocorria para erros absolutos pequenos.
 
     Não houve muitos problemas nessa aplicação e os testes com as matrizes disponibilizadas ocorriam em menos de 0.01s.
-    Acretitamos que esse tempo era bem menor do que os vistos na primeira tarefa, mesmo ele sendo utilizado nesse código, pois a matriz do exemplo é significantemente menor.
+    Acreditamos que esse tempo era bem menor do que os vistos na primeira tarefa, mesmo ele sendo utilizado nesse código, pois a matriz do exemplo é significantemente menor.
 
 \section{Programa Principal}
 
     Nesse programa, implementamos calculos de matrizes para a criação de uma AI a partir de Machine Learning que é capaz de identificar dígitos escritos a mão a partir de uma imagem quadrada de 28 pixels.
-    Para isso, é preciso que um banco de dados com vários exemplos dos dignos manuscritos já categorizados sejam utilizados pelo programa para a criação de uma matriz para cada digito que serão a passe de um espaço vetorial.
+    Para isso, é preciso que um banco de dados com vários exemplos dos dígitos manuscritos já categorizados seja utilizado pelo programa para a criação de uma matriz para cada digito que serão a passe de um espaço vetorial.
 
     Ao compararmos uma matriz criada a partir da imagem analisada com cada uma das bases, podemos ver com qual ela mais se assemelha para identificarmos o dígito nela escrito.
 
@@ -111,7 +111,7 @@
 
 \subsection{Otimização}
 
-    Para otimizar esse código, alguns passos foram tomados, e entre elas, ouve a condensação das funções.
+    Para otimizar esse código, alguns passos foram tomados, e entre elas, a condensação das funções.
     Se comparado com funções similares nos programas auxiliares vemos que elas são mais segmentadas para uma maior fexibilidade do código, eentretando, no programa \textit{IdentificadorDeDígitos.py} isso era prejudicial, pois o tempo perdido chamando funções auxiliares se somavam muito rapidamente.
 
 \subsection{Testes}
