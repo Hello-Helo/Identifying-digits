@@ -8,7 +8,7 @@ O enunciado pode ser encontrado no arquivo `Machine_Learning.pdf`, disponibiliza
 
 ### Imagens
 
-As imagens estão localizadas na pasta `dados_mnist` na forma de matriz, onde cada coluna é uma imágem distinta. É preciso que todos eles estejam nessa pasta no diretório dos arquivos `.py` para o programa rodar corretamente.
+As imagens estão localizadas na pasta `dados_mnist` na forma de matriz, onde cada coluna é uma imagem distinta. É preciso que todos eles estejam nessa pasta no diretório dos arquivos `.py` para o programa rodar corretamente.
   
 ### As tarefas
 
